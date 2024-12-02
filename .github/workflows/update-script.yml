@@ -19,7 +19,7 @@ jobs:
             - name: Update PowerShell Script
               run: |
                   $GitHubUrl = "https://raw.githubusercontent.com/itpro-tips/PowerShell-Toolbox/master/Update-AllPowerShellModules.ps1"
-                  $LocalFilePath = "path/to/your/repo/Update-AllPowerShellModules.ps1"
+                  $LocalFilePath = "src/public/Update-AllPowershellModules.ps1"
                   Invoke-WebRequest -Uri $GitHubUrl -OutFile $LocalFilePath
 
             - name: Commit and push changes
@@ -30,4 +30,4 @@ jobs:
                   git commit -m "Update PowerShell script"
                   git push
               env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  GITHUB_TOKEN: ${{ secrets.ACTIONS_TOKEN }}
