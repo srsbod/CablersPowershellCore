@@ -1,0 +1,33 @@
+name: Update PowerShell Script
+
+on:
+    schedule:
+        - cron: "0 0 * * *" # This runs the workflow daily at midnight
+    workflow_dispatch: # Allows manual triggering of the workflow
+
+jobs:
+    update-script:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+
+            - name: Set up PowerShell
+              uses: actions/setup-powershell@v2
+
+            - name: Update PowerShell Script
+              run: |
+                  $GitHubUrl = "https://raw.githubusercontent.com/itpro-tips/PowerShell-Toolbox/master/Update-AllPowerShellModules.ps1"
+                  $LocalFilePath = "path/to/your/repo/Update-AllPowerShellModules.ps1"
+                  Invoke-WebRequest -Uri $GitHubUrl -OutFile $LocalFilePath
+
+            - name: Commit and push changes
+              run: |
+                  git config --global user.name 'github-actions[bot]'
+                  git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+                  git add .
+                  git commit -m "Update PowerShell script"
+                  git push
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

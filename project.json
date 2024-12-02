@@ -1,0 +1,21 @@
+{
+  "ProjectName": "CablersPowershellCore",
+  "Description": "Cablers Powershell base module for all devices",
+  "Version": "1.0.0",
+  "Manifest": {
+    "Author": "Brad Bullock",
+    "PowerShellHostVersion": "5.1",
+    "GUID": "ee79955b-0eeb-48d4-a1b4-fa692d955cac",
+    "Tags": [],
+    "ProjecUri": ""
+  },
+  "Pester": {
+    "TestResult": {
+      "Enabled": true,
+      "OutputFormat": "NUnitXml"
+    },
+    "Output": {
+      "Verbosity": "Detailed"
+    }
+  }
+}
