@@ -24,7 +24,7 @@ jobs:
             - name: Check for changes
               id: changes
               run: |
-                  if git diff --quiet; then echo "No changes detected" && exit 0; fi
+                  if (git diff --quiet){Write-Output "No changes detected"; exit 0}
 
             - name: Commit and push changes
               run: |
