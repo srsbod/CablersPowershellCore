@@ -18,7 +18,7 @@ jobs:
               run: |
                   $GitHubUrl = "https://raw.githubusercontent.com/itpro-tips/PowerShell-Toolbox/master/Update-AllPowerShellModules.ps1"
                   Get-ChildItem
-                  $LocalFilePath = "CablersPowershellCore\src\public\Update-AllPowershellModules.ps1"
+                  $LocalFilePath = "src\public\Update-AllPowershellModules.ps1"
                   Invoke-WebRequest -Uri $GitHubUrl -OutFile $LocalFilePath
 
             - name: Check for changes
