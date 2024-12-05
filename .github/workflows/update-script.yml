@@ -23,8 +23,10 @@ jobs:
 
             - name: Check for changes
               id: changes
+              shell: pwsh
               run: |
-                  if (-not (git diff --quiet)) {
+                  git diff --quiet
+                  if ($LASTEXITCODE -ne 0) {
                       Write-Output "Changes detected"
                       echo "changes_detected=true" >> $env:GITHUB_ENV
                   } else {
@@ -34,6 +36,7 @@ jobs:
 
             - name: Commit and push changes
               if: env.changes_detected == 'true'
+              shell: pwsh
               run: |
                   git config --global user.name 'github-actions[bot]'
                   git config --global user.email 'github-actions[bot]@users.noreply.github.com'
