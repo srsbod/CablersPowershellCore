@@ -10,17 +10,17 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
-            - name: Checkout repository
-              uses: actions/checkout@v2
-
-            - name: Set up PowerShell
-              uses: actions/setup-powershell@v2
-
             - name: Update PowerShell Script
+              shell: pwsh
               run: |
                   $GitHubUrl = "https://raw.githubusercontent.com/itpro-tips/PowerShell-Toolbox/master/Update-AllPowerShellModules.ps1"
                   $LocalFilePath = "src/public/Update-AllPowershellModules.ps1"
-                  Invoke-WebRequest -Uri $GitHubUrl -OutFile $LocalFilePath
+                  Invoke-WebRequest -Uri $GitHubUrl -OutFile $LocalFilePaths
+
+            - name: Check for changes
+              id: changes
+              run: |
+                  if git diff --quiet; then echo "No changes detected" && exit 0; fi
 
             - name: Commit and push changes
               run: |
