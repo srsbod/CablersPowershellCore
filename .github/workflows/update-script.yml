@@ -17,8 +17,7 @@ jobs:
               shell: pwsh
               run: |
                   $GitHubUrl = "https://raw.githubusercontent.com/itpro-tips/PowerShell-Toolbox/master/Update-AllPowerShellModules.ps1"
-                  Get-ChildItem
-                  $LocalFilePath = "src\public\Update-AllPowershellModules.ps1"
+                  $LocalFilePath = "src/public/Update-AllPowershellModules.ps1"
                   Invoke-WebRequest -Uri $GitHubUrl -OutFile $LocalFilePath
 
             - name: Check for changes
@@ -31,6 +30,7 @@ jobs:
                       echo "changes_detected=true" >> $env:GITHUB_ENV
                   } else {
                       Write-Output "No changes detected"
+                      echo "changes_detected=false" >> $env:GITHUB_ENV
                       exit 0
                   }
 
@@ -44,4 +44,4 @@ jobs:
                   git commit -m "Update PowerShell script"
                   git push
               env:
-                  GITHUB_TOKEN: ${{ secrets.ACTIONS_TOKEN }}
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
