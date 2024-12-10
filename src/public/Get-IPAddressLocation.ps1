@@ -1,29 +1,24 @@
 <#
-
 .SYNOPSIS
-
     Get the geographical location of an IP address using the iplocation.net API.
 
 .DESCRIPTION
-
     Get the geographical location of an IP address using the iplocation.net API.
     Returns an object containing the IP address, country, country code, and ISP.
 
-.PARAMETER IPAddress
+.SYNTAX
+    Get-IPAddressLocation [-IPAddress] <string[]> [<CommonParameters>]
 
+.PARAMETER IPAddress
     The IP address(es) to retrieve location information for. Accepts input from pipeline. Accepts multiple IP Addresses.
 
 .EXAMPLE
-
     Get-IPAddressLocation -IPAddress "8.8.8.8"
-
     This will retrieve the location information for the IP address
 
 .EXAMPLE
-
     $IPAddresses = "1.1.1.1", "8.8.8.8"
     $IPAddresses | Get-IPAddressLocation
-
     This will retrieve the location information for the IP addresses
 
 #>
