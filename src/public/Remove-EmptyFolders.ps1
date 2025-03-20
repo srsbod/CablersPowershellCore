@@ -51,14 +51,14 @@ function Remove-EmptyFolders {
 
         # Recursive call to check subfolders
         foreach ($folder in $folders) {
-            Remove-EmptyFolders $folder.FullName
+            $RemovedFolders += Remove-EmptyFolders $folder.FullName
         }
 
         # Check if the current folder is empty remove it
         if (Test-EmptyFolder $Path) {
             Try {
                 if ($PSCmdlet.ShouldProcess($Path, "Remove-EmptyFolder")) {
-                    Remove-Folder -Verbose:$VerbosePreference
+                    Remove-Item -Path $Path -Verbose:$VerbosePreference
                     $RemovedFolders += $Path
                 }
             }
@@ -67,7 +67,7 @@ function Remove-EmptyFolders {
             }
         }
 
-        Return $RemovedFolders
+        Write-Output $RemovedFolders
     }
 
     end {

@@ -39,7 +39,6 @@
 #>
 
 function Uninstall-Software {
-
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName, Position = 0)]
@@ -57,84 +56,78 @@ function Uninstall-Software {
     )
 
     begin {
-        If (!(Test-IsWindowsDevice)) {
-            Throw "This script can only be run on a Windows operating system."
-        }
     }
 
     process {
+        foreach ($App in $Name) {
+            $installedSoftware = Get-InstalledSoftware -SoftwareName $App
 
-        Foreach ($App in $Name) {
+            if (-not $installedSoftware) {
+                Write-Warning "$App is not installed."
+                continue
+            }
 
-            Get-InstalledSoftware -SoftwareName $App | ForEach-Object {
-
+            foreach ($software in $installedSoftware) {
                 # Confirm uninstall
-                If ($NoConfirm -eq $false) {
-                    $confirm = Read-Host "Uninstall $($_.name)? (Y/N)"
-                    If ($confirm -ne "Y") {
-                        Write-Output "Skipping $($_.name)"
-                        return
+                if (-not $NoConfirm) {
+                    $confirm = Read-Host "Uninstall $($software.name)? (Y/N)"
+                    if ($confirm -ne "Y") {
+                        Write-Output "Skipping $($software.name)"
+                        continue
                     }
                 }
 
                 $UninstallString = $null
-                [Version]$InstalledVersion = $_.Version
+                [Version]$InstalledVersion = $software.Version
 
                 # Check if the software is already at or above the minimum version
-                If ($KeepMinimumVersion -and ($InstalledVersion -ge $KeepMinimumVersion)) {
-                    Write-Output "$($_.name) is already at or above the minimum version of $KeepMinimumVersion."
-                    $_
-                    return
+                if ($KeepMinimumVersion -and ($InstalledVersion -ge $KeepMinimumVersion)) {
+                    Write-Output "$($software.name) is already at or above the minimum version of $KeepMinimumVersion."
+                    continue
                 }
 
                 # Select the correct uninstall string if one exists
-                If ($_.QuietUninstallString) {
-                    $UninstallString = $_.QuietUninstallString
+                if ($software.QuietUninstallString) {
+                    $UninstallString = $software.QuietUninstallString
                 }
-                # Use the normal uninstall string if silentonly is not enabled, or if the uninstall string uses msiexec (which is silent by default)
-                elseif ((-not ($SilentOnly)) -or ($_.UninstallString -match "msiexec")) {
-                    $UninstallString = $_.UninstallString
+                elseif ((-not $SilentOnly) -or ($software.UninstallString -match "msiexec")) {
+                    $UninstallString = $software.UninstallString
                 }
 
                 # If there is still no uninstall string, write an error and move on to the next app
-                if (-not ($UninstallString)) {
-                    Write-Error "$($_.name) does not have a valid uninstall string."
-                    return
+                if (-not $UninstallString) {
+                    Write-Error "$($software.name) does not have a valid uninstall string."
+                    continue
                 }
 
-                # If the uninstallstring uses msiexec, add the /qn flag to make it silent if it's not already present
-                If ($UninstallString -match "msiexec") {
-                    If (-not ($UninstallString -match "/qn")) {
+                # If the uninstall string uses msiexec, add the /qn flag to make it silent if it's not already present
+                if ($UninstallString -match "msiexec") {
+                    if (-not ($UninstallString -match "/qn")) {
                         $UninstallString = "$UninstallString /qn"
                     }
                 }
 
-                Write-Output "Uninstalling $($_.name) using command: $UninstallString"
+                Write-Output "Uninstalling $($software.name) using command: $UninstallString"
 
                 # Uninstall the software
                 if ($UninstallString -match "msiexec") {
                     $arguments = $UninstallString -replace "^msiexec.exe\s*", ""
-                    Try {
+                    try {
                         Start-Process -FilePath "msiexec.exe" -ArgumentList $arguments -Wait -NoNewWindow
                     }
-                    Catch {
-                        Write-Error "Failed to uninstall $($_.name). Error: $_"
+                    catch {
+                        Write-Error "Failed to uninstall $($software.name). Error: $_"
                     }
                 }
                 else {
-                    <#  Use regex to match the executable path and arguments
-                        \"[^\"]+\"      A quoted string (handles paths with spaces).
-                        \S+             A non-quoted string (handles paths without spaces).
-                        \s*(.*)$        Any arguments that follow the executable path.
-                    #>
                     if ($UninstallString -match '^(\"[^\"]+\"|\S+)\s*(.*)$') {
                         $uninstallPath = $matches[1]
                         $arguments = $matches[2]
-                        Try {
+                        try {
                             Start-Process -FilePath $uninstallPath -ArgumentList $arguments -Wait -NoNewWindow
                         }
-                        Catch {
-                            Write-Error "Failed to uninstall $($_.name). Error: $_"
+                        catch {
+                            Write-Error "Failed to uninstall $($software.name). Error: $_"
                         }
                     }
                     else {
@@ -143,19 +136,16 @@ function Uninstall-Software {
                 }
 
                 # Check if the software was uninstalled
-                If (-not (Get-InstalledSoftware -SoftwareName $App)) {
-                    Write-Output "$($_.name) has been uninstalled:"
-                    $_
+                if (-not (Get-InstalledSoftware -SoftwareName $App)) {
+                    Write-Output "$($software.name) has been uninstalled."
                 }
                 else {
-                    Write-Error "$($_.name) was not uninstalled. Ensure you are running with sufficient permissions to uninstall it. Alternatively, a reboot may be required to complete the uninstallation."
-                    $_
+                    Write-Error "$($software.name) was not uninstalled. Ensure you are running with sufficient permissions to uninstall it. Alternatively, a reboot may be required to complete the uninstallation."
                 }
             }
         }
     }
 
     end {
-
     }
 }
