@@ -40,10 +40,8 @@ function Test-EmptyFolder {
     }
 
     process {
-        function Test-EmptyFolder($Source) {
-            $items = Get-ChildItem -LiteralPath $Source -Force
-            return ($items.Count -eq 0)
-        }
+        $items = Get-ChildItem -LiteralPath $Path -Force
+        return ($items.Count -eq 0)
     }
 
     end {

@@ -1,9 +1,64 @@
 ﻿#Requires -Module PwnedPassCheck
 
-#TODO: Comment based help
 #TODO: Support for passphrases?
 #TODO: Test rate limiting better, possibly reduce/remove it to speed up the process
 
+<#
+.SYNOPSIS
+Generates one or more passwords based on the specified parameters.
+
+.DESCRIPTION
+The New-Password function generates passwords using different methods such as simple, strong, or random. 
+It supports additional options like checking if the password has been pwned, saving to a file, or copying to the clipboard.
+
+.PARAMETER Simple
+Generates a simple password using an external API.
+
+.PARAMETER Strong
+Generates a strong password using an external API.
+
+.PARAMETER Random
+Generates a random password with customizable length and character set.
+
+.PARAMETER Length
+Specifies the length of the random password. Default is 12.
+
+.PARAMETER NoSymbols
+Excludes symbols from the random password.
+
+.PARAMETER PwnCheck
+Checks if the generated password has been pwned using the PwnedPassCheck module.
+
+.PARAMETER NumberOfPasswords
+Specifies the number of passwords to generate. Default is 1.
+
+.PARAMETER OutputPath
+Specifies the file path to save the generated passwords.
+
+.PARAMETER CopyToClipboard
+Copies the generated passwords to the clipboard.
+
+.PARAMETER SleepTime
+Specifies the delay (in milliseconds) between password generations to avoid rate limiting. Default is 100.
+
+.EXAMPLE
+New-Password -Simple -NumberOfPasswords 5
+
+Generates 5 simple passwords.
+
+.EXAMPLE
+New-Password -Random -Length 16 -NoSymbols -PwnCheck
+
+Generates a random password of length 16 without symbols and checks if it has been pwned.
+
+.EXAMPLE
+New-Password -Strong -OutputPath "C:\Passwords.txt"
+
+Generates a strong password and saves it to the specified file.
+
+.NOTES
+Requires the PwnedPassCheck module for the PwnCheck functionality.
+#>
 function New-Password {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "", Justification = "Not actually changing anything on the system.")]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "", Justification = "Write-Host is fine here.")]
