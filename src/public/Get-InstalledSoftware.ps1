@@ -40,9 +40,6 @@ Function Get-InstalledSoftware {
 
     Begin {
         $Applist = @()
-        If (!(Test-IsWindowsDevice)) {
-            Throw "This script can only be run on a Windows operating system."
-        }
     }
 
     Process {

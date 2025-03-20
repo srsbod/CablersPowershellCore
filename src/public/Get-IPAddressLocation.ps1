@@ -51,7 +51,7 @@ function Get-IPAddressLocation {
                 Write-Debug "IP address $IP has been parsed as $validatedIP."
             }
             Catch {
-                Write-Error "The specified IP Address $IP is not valid. Please provide a valid IP Address."
+                Write-Warning "The specified IP Address $IP is not valid."
                 continue
             }
 
