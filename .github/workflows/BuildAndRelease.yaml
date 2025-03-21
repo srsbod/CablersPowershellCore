@@ -78,13 +78,18 @@ jobs:
 
           # Define exclusion patterns
           $ExcludePatterns = @(
-            "^\..*",      # Files/folders starting with .
-            "^tests\\.*", # Tests folder
-            "README.md"   # README file
+            "^\..*"      # Files/folders starting with .
           )
 
           # Get all files to copy
           $Files = Get-ChildItem -Path $env:GITHUB_WORKSPACE -Recurse -File
+
+          # Initialize counters
+          $IncludedCount = 0
+          $ExcludedCount = 0
+          $ExcludedFiles = @()
+
+          Write-Output -InputObject "Starting to process files for packaging..."
 
           foreach ($File in $Files) {
             $RelativePath = $File.FullName.Substring("$($env:GITHUB_WORKSPACE)\".Length)
@@ -93,6 +98,9 @@ jobs:
             foreach ($Pattern in $ExcludePatterns) {
               if ($RelativePath -match $Pattern) {
                 $Excluded = $true
+                $ExcludedFiles += $RelativePath
+                $ExcludedCount++
+                Write-Output -InputObject "EXCLUDED: $RelativePath (matches pattern: $Pattern)"
                 break
               }
             }
@@ -106,6 +114,21 @@ jobs:
               }
               
               Copy-Item -Path $File.FullName -Destination $DestPath -Force
+              $IncludedCount++
+              Write-Output -InputObject "INCLUDED: $RelativePath"
+            }
+          }
+
+          # Output summary
+          Write-Output -InputObject "`nPackaging Summary:"
+          Write-Output -InputObject "  - Total files processed: $($IncludedCount + $ExcludedCount)"
+          Write-Output -InputObject "  - Files included in package: $IncludedCount"
+          Write-Output -InputObject "  - Files excluded from package: $ExcludedCount"
+
+          if ($ExcludedCount -gt 0) {
+            Write-Output -InputObject "`nExclusion patterns used:"
+            foreach ($Pattern in $ExcludePatterns) {
+              Write-Output -InputObject "  - $Pattern"
             }
           }
 
@@ -114,7 +137,7 @@ jobs:
           $ZipPath = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath $ZipName
           Compress-Archive -Path "$BuildDir\*" -DestinationPath $ZipPath -Force
 
-          Write-Output -InputObject "Created package: $ZipPath"
+          Write-Output -InputObject "`nCreated package: $ZipPath"
           "ZIP_PATH=$ZipPath" >> $env:GITHUB_OUTPUT
 
       - name: Create Release
