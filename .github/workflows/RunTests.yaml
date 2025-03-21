@@ -56,7 +56,7 @@ jobs:
           }
 
           # Import the module
-          Import-Module PwnedPassCheck -MinimumVersion 5.0
+          Import-Module PwnedPassCheck
 
           # Confirm module loaded
           Get-Module -Name PwnedPassCheck | Select-Object Name, Version
