@@ -38,8 +38,13 @@ jobs:
         run: |
           $thumbprint = '${{ steps.setup-cert.outputs.CERT_THUMBPRINT }}'
 
-          # Get only files changed in the most recent commit
-          $changedFiles = git diff --name-only HEAD^ HEAD | Where-Object { $_ -match '\.(ps1|psm1|psd1)$' }
+          # Ensure there are at least two commits before running git diff
+          if ((git rev-list --count HEAD) -gt 1) {
+            # Get only files changed in the most recent commit
+            $changedFiles = git --no-pager diff --name-only HEAD^ HEAD | Where-Object { $_ -match '\.(ps1|psm1|psd1)$' }
+          } else {
+            $changedFiles = git --no-pager diff --name-only HEAD | Where-Object { $_ -match '\.(ps1|psm1|psd1)$' }
+          }
 
           foreach ($file in $changedFiles) {
             if (Test-Path $file) {
