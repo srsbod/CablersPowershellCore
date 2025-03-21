@@ -50,4 +50,3 @@ function Get-LongestCommonPrefix {
     # Return the common prefix found in the first string up to the minimum length
     return $Strings[0].Substring(0, $MinLength)
 }
-
