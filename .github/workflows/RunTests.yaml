@@ -46,6 +46,7 @@ jobs:
             Write-Output "Registering PSGallery repository"
             Register-PSRepository -Name PSGallery -SourceLocation "https://www.powershellgallery.com/api/v2" -InstallationPolicy Trusted
           }
+          Get-PSRepository
 
           if (-not (Get-Module -Name PwnedPassCheck -ListAvailable)) {
             Write-Output "Installing PwnedPassCheck module"
