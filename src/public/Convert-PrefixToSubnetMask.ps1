@@ -6,7 +6,7 @@ function Convert-PrefixToSubnetMask {
     )
     $binaryMask = ('1' * $prefixLength).PadRight(32, '0')
     $subnetMask = [string]::Join('.', ($binaryMask -split '(.{8})' | Where-Object { $_ -ne '' } | ForEach-Object { [convert]::ToInt32($_, 2) }))
-    return $subnetMask
+    Write-Output $subnetMask
 }
 
 # SIG # Begin signature block

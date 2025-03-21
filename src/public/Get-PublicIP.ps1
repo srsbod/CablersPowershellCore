@@ -48,7 +48,7 @@ function Get-PublicIP {
             $PublicIP | Set-Clipboard
         }
 
-        Return $PublicIP
+        Write-Output $PublicIP
     }
 
     end {

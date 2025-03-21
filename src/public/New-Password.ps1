@@ -138,7 +138,7 @@ function New-Password {
             $Passwords | Set-Clipboard
         }
 
-        Return $Passwords
+        Write-Output $Passwords
     }
 
     end {
