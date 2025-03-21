@@ -1,1 +1,6 @@
 .github/copilot-instructions.md
+
+# Certificate files
+*.pfx
+*.p12
+*.key

@@ -21,3 +21,5 @@ When responding to questions on how to make a change to a script, only include t
 When creating variables, always use Pascalcase for the variable name. For example, $MyVariable instead of $myvariable or $myVariable. Variable names should also be descriptive and meaningful. For example, $UserName instead of $u or $name.
 
 When creating parameters, always use Pascalcase for the parameter name. For example, MyParameter instead of myparameter or myParameter.
+
+Never place certificates or secrets inside a repository. This includes hard coding them into scripts.
