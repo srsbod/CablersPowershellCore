@@ -1,0 +1,107 @@
+name: Sign New and Unsigned PowerShell Files
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master, main]
+  pull_request:
+    types: [closed]
+    branches: [master, main]
+
+jobs:
+  sign-new-and-unsigned:
+    runs-on: windows-latest
+    # Only run on merged PRs or other events (push, schedule, workflow_dispatch)
+    if: github.event_name != 'pull_request' || github.event.pull_request.merged == true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Full history needed to identify all files
+
+      - name: Setup certificate
+        id: setup-cert
+        shell: pwsh
+        run: |
+          # Create certificate directory
+          New-Item -ItemType Directory -Path cert -Force
+
+          # Decode and save certificate
+          $certBytes = [Convert]::FromBase64String('${{ secrets.CODE_SIGNING_CERT }}')
+          $certPath = Join-Path -Path cert -ChildPath cert.pfx
+          [System.IO.File]::WriteAllBytes($certPath, $certBytes)
+
+          # Import certificate
+          $securePassword = ConvertTo-SecureString -String '${{ secrets.CODE_SIGNING_PASS }}' -AsPlainText -Force
+          Import-PfxCertificate -FilePath $certPath -CertStoreLocation Cert:\CurrentUser\My -Password $securePassword
+
+          # Get thumbprint for signing
+          $cert = Get-PfxCertificate -FilePath $certPath -Password $securePassword
+          $thumbprint = $cert.Thumbprint
+          Write-Output -InputObject "CERT_THUMBPRINT=$thumbprint" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+      - name: Sign new and unsigned PowerShell files
+        shell: pwsh
+        run: |
+          $thumbprint = '${{ steps.setup-cert.outputs.CERT_THUMBPRINT }}'
+
+          # Find all PowerShell files in the repository
+          $allPsFiles = Get-ChildItem -Path . -Recurse -Include *.ps1, *.psm1, *.psd1 -File
+
+          $filesToSign = @()
+
+          foreach ($file in $allPsFiles) {
+            $signature = Get-AuthenticodeSignature -FilePath $file.FullName
+            # Check if the file has no signature or an invalid signature
+            if ($signature.Status -ne 'Valid') {
+              $filesToSign += $file.FullName
+              Write-Output -InputObject "Found unsigned file: $($file.FullName)"
+            }
+          }
+
+          # Sign all unsigned files
+          $signerCert = Get-Item "Cert:\CurrentUser\My\$thumbprint"
+          $signedCount = 0
+
+          foreach ($file in $filesToSign) {
+            Write-Output -InputObject "Signing $file"
+            Set-AuthenticodeSignature -FilePath $file -Certificate $signerCert -TimestampServer "http://timestamp.digicert.com"
+            $signedCount++
+          }
+
+          Write-Output -InputObject "Signed $signedCount files"
+
+          # Store the count for the commit message
+          Write-Output -InputObject "SIGNED_COUNT=$signedCount" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Verify signatures
+        shell: pwsh
+        run: |
+          $failedFiles = @()
+
+          foreach ($file in $filesToSign) {
+            $signature = Get-AuthenticodeSignature -FilePath $file
+            if ($signature.Status -ne 'Valid') {
+              $failedFiles += $file
+              Write-Output -InputObject "Signature verification failed for $file"
+            }
+          }
+
+          if ($failedFiles.Count -gt 0) {
+            Write-Output -InputObject "Signature verification failed for $($failedFiles.Count) files"
+            exit 1
+          }
+
+      - name: Remove certificate
+        shell: pwsh
+        run: |
+          $thumbprint = '${{ steps.setup-cert.outputs.CERT_THUMBPRINT }}'
+          Remove-Item -Path "Cert:\CurrentUser\My\$thumbprint"
+
+      - name: Commit signed files
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "Sign ${{ env.SIGNED_COUNT }} new/unsigned PowerShell files" -a || echo "No changes to commit"
+          git push
