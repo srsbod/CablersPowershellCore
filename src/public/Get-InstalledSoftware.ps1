@@ -83,7 +83,7 @@ Function Get-InstalledSoftware {
             }
             $Applist += $Obj
         }
-        Return $Applist
+        Write-Output $Applist
     }
 
     End {

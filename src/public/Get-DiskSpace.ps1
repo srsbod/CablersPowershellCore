@@ -89,7 +89,7 @@ Function Get-DiskSpace {
             }
         }
 
-        return $Output
+        Write-Output $Output
 
     }
 

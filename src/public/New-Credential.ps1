@@ -17,7 +17,7 @@ function New-Credential {
 
     process {
         $Credential = [PSCredential]::New($Username, $SecurePassword)
-        Return $Credential
+        Write-Output $Credential
     }
 
     end {

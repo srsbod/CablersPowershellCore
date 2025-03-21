@@ -40,7 +40,7 @@ Function Compare-Files {
             $Object.Match = $False
         }
 
-        Return $Object
+        Write-Output $Object
     }
 
     End {

@@ -41,7 +41,7 @@ function Test-EmptyFolder {
 
     process {
         $items = Get-ChildItem -LiteralPath $Path -Force
-        return ($items.Count -eq 0)
+        Write-Output ($items.Count -eq 0)
     }
 
     end {

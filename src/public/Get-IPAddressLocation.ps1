@@ -97,7 +97,7 @@ function Get-IPAddressLocation {
         Write-Progress -Activity "Retrieving IP Address Locations" -Status "Completed" -Completed
 
         Write-Verbose "Completed processing all IP addresses."
-        return $results
+        Write-Output $results
 
     }
 }

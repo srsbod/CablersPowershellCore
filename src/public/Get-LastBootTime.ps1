@@ -24,7 +24,8 @@ function Get-LastBootTime {
     }
     
     process {
-        Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object -ExpandProperty LastBootUpTime | Get-Date -Format "dd MMMM yyyy hh:mm:ss"
+        $LastBootTime = Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object -ExpandProperty LastBootUpTime | Get-Date -Format "dd MMMM yyyy hh:mm:ss"
+        Write-Output $LastBootTime
     }
     
     end {
