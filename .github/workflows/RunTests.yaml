@@ -50,7 +50,7 @@ jobs:
 
           if (-not (Get-Module -Name PwnedPassCheck -ListAvailable)) {
             Write-Output "Installing PwnedPassCheck module"
-            Install-Module -Name PwnedPassCheck -Force -SkipPublisherCheck -Scope CurrentUser -MinimumVersion 5.0
+            Install-Module -Name PwnedPassCheck
           }
 
           # Import the module
