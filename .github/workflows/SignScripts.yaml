@@ -48,10 +48,29 @@ jobs:
 
           foreach ($file in $changedFiles) {
             if (Test-Path $file) {
-              Write-Host "Signing $file"
+              Write-Output -InputObject "Signing $file"
               Set-AuthenticodeSignature -FilePath $file -Certificate (Get-Item "Cert:\CurrentUser\My\$thumbprint") -TimestampServer "http://timestamp.digicert.com"
             }
           }
+
+      - name: Verify signatures
+        shell: pwsh
+        run: |
+          foreach ($file in $changedFiles) {
+            if (Test-Path $file) {
+              $signature = Get-AuthenticodeSignature -FilePath $file
+              if ($signature.Status -ne 'Valid') {
+                Write-Error "Signature verification failed for $file"
+                exit 1
+              }
+            }
+          }
+
+      - name: Remove certificate
+        shell: pwsh
+        run: |
+          $thumbprint = '${{ steps.setup-cert.outputs.CERT_THUMBPRINT }}'
+          Remove-Item -Path "Cert:\CurrentUser\My\$thumbprint"
 
       - name: Commit signed files
         run: |
