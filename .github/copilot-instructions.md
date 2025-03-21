@@ -16,6 +16,8 @@ Always use a proper foreach instead of foreach-object.
 
 Do not use any aliases in scripts.
 
+When making edits to a function such as adding or removing parameters, always make appropriate changes to the tests file as well.
+
 When responding to questions on how to make a change to a script, only include the relevant part of the script that needs to be changed, not the entire script. If the change is large, provide a summary of the changes and then provide the full updated script.
 
 When creating variables, always use Pascalcase for the variable name. For example, $MyVariable instead of $myvariable or $myVariable. Variable names should also be descriptive and meaningful. For example, $UserName instead of $u or $name.

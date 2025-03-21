@@ -84,18 +84,19 @@ jobs:
           $PesterConfig = New-PesterConfiguration
           $PesterConfig.Run.Path = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath "tests"
           $PesterConfig.Output.Verbosity = "Detailed"
+          $PesterConfig.Run.PassThru = $true  # Add this line to enable PassThru in the configuration
 
           # Run the tests
-          Write-Output "Starting Pester tests..."
-          $TestResults = Invoke-Pester -Configuration $PesterConfig -PassThru
+          Write-Output -InputObject "Starting Pester tests..."
+          $TestResults = Invoke-Pester -Configuration $PesterConfig
 
           # Output results to GitHub workflow
-          Write-Output "Test Results: $($TestResults.PassedCount) passed, $($TestResults.FailedCount) failed, $($TestResults.SkippedCount) skipped."
+          Write-Output -InputObject "Test Results: $($TestResults.PassedCount) passed, $($TestResults.FailedCount) failed, $($TestResults.SkippedCount) skipped."
 
           # Fail the workflow if any tests failed
           if ($TestResults.FailedCount -gt 0) {
             Write-Error "Tests failed! $($TestResults.FailedCount) test(s) failed."
             exit 1
           } else {
-            Write-Output "All tests passed!"
+            Write-Output -InputObject "All tests passed!"
           }
