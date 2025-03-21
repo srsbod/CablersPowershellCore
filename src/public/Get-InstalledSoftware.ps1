@@ -1,5 +1,3 @@
-#TODO: Add alias to module manifest - Get-InstalledApps
-
 <#
 
 .SYNOPSIS
