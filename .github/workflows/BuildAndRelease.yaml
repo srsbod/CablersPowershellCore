@@ -5,11 +5,15 @@ on:
     branches: [master, main]
     paths-ignore:
       - "**.md"
+      - ".gitignore"
+      - ".github/workflows/**"
   pull_request:
     types: [closed]
     branches: [master, main]
     paths-ignore:
       - "**.md"
+      - ".gitignore"
+      - ".github/workflows/**"
   workflow_dispatch:
 
 jobs:
@@ -17,8 +21,7 @@ jobs:
     runs-on: windows-latest
     if: |
       github.event_name == 'workflow_dispatch' || 
-      github.event_name == 'push' || 
-      (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+      (github.event_name == 'push' && contains(github.event.head_commit.message, 'bump version'))
 
     steps:
       - name: Checkout code
@@ -42,27 +45,58 @@ jobs:
           Write-Output -InputObject "Module version: $Version"
           "VERSION=$Version" >> $env:GITHUB_OUTPUT
 
+      - name: Check version change
+        id: check-version
+        shell: pwsh
+        run: |
+          # Get latest release version
+          try {
+            $LatestRelease = Invoke-RestMethod -Uri "https://api.github.com/repos/${env:GITHUB_REPOSITORY}/releases/latest" -ErrorAction Stop
+            $LatestVersion = $LatestRelease.tag_name -replace '^v', ''
+            Write-Output -InputObject "Latest release version: $LatestVersion"
+          }
+          catch {
+            # No releases yet or other error
+            $LatestVersion = "0.0.0"
+            Write-Output -InputObject "No previous releases found or error occurred, using version 0.0.0 as baseline"
+          }
+
+          # Compare with current version
+          $CurrentVersion = "${{ steps.get-version.outputs.VERSION }}"
+          Write-Output -InputObject "Current module version: $CurrentVersion"
+
+          $VersionChanged = [System.Version]$CurrentVersion -gt [System.Version]$LatestVersion
+          Write-Output -InputObject "Version changed: $VersionChanged"
+
+          # Set output
+          "VERSION_CHANGED=$VersionChanged" >> $env:GITHUB_OUTPUT
+          If (-not $VersionChanged) {
+            Write-Output -InputObject "No version change detected. Skipping release."
+            exit 0
+          }
+
       - name: Get commit history
         id: get-history
         shell: pwsh
         run: |
           # Find the latest tag (excluding the current one we're creating)
-          $LatestTag = git tag --sort=-creatordate | Select-Object -First 1
-
+          $LatestTag = git tag --sort=-creatordate | Select-Object -First 1  
           if (-not $LatestTag) {
             # If no previous tag exists, get all commits
-            $CommitHistory = git log --pretty=format:"- %s (%h)" --abbrev-commit
+            $RawCommitHistory = git log --pretty=format:"- %s (%h)" --abbrev-commit
             Write-Output -InputObject "No previous tag found. Using all commit history."
           } else {
             # Get commits between latest tag and HEAD
-            $CommitHistory = git log "$LatestTag..HEAD" --pretty=format:"- %s (%h)" --abbrev-commit
+            $RawCommitHistory = git log "$LatestTag..HEAD" --pretty=format:"- %s (%h)" --abbrev-commit
             Write-Output -InputObject "Found previous tag: $LatestTag"
-          }
-
+          }  
+          # Filter out signing commits
+          $CommitLines = $RawCommitHistory -split "`n"
+          $FilteredCommits = $CommitLines | Where-Object { $_ -notmatch "- Sign \d+ new/unsigned PowerShell files" }
+          $CommitHistory = $FilteredCommits -join "`n"  
           if ([string]::IsNullOrWhiteSpace($CommitHistory)) {
             $CommitHistory = "- No changes detected since last release"
-          }
-
+          }  
           # Convert the commit history to a format suitable for GitHub Actions output
           $CommitHistoryFormatted = $CommitHistory -replace "`n", "%0A"
           "COMMIT_HISTORY<<EOF" >> $env:GITHUB_OUTPUT
