@@ -41,6 +41,17 @@ jobs:
             choco install 7zip -y
           }
 
+          if (-not (Get-Module -Name PwnedPassCheck -ListAvailable)) {
+            Write-Output "Installing PwnedPassCheck module"
+            Install-Module -Name PwnedPassCheck -Force -SkipPublisherCheck -Scope CurrentUser -MinimumVersion 5.0
+          }
+
+          # Import the module
+          Import-Module PwnedPassCheck -MinimumVersion 5.0
+
+          # Confirm module loaded
+          Get-Module -Name PwnedPassCheck | Select-Object Name, Version
+
       - name: Run Pester tests
         shell: pwsh
         run: |
