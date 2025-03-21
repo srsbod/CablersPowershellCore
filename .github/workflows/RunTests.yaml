@@ -45,6 +45,8 @@ jobs:
           if (-not (Get-PSRepository -Name PSGallery -ErrorAction SilentlyContinue)) {
             Write-Output "Registering PSGallery repository"
             Register-PSRepository -Name PSGallery -SourceLocation "https://www.powershellgallery.com/api/v2" -InstallationPolicy Trusted
+          } else {
+            Set-Repository -Name PSGallery -InstallationPolicy Trusted
           }
           Get-PSRepository
 
