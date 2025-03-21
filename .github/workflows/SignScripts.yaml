@@ -1,0 +1,57 @@
+name: Sign PowerShell Module
+
+on:
+  push:
+    branches: [master, main]
+  workflow_dispatch:
+
+jobs:
+  sign-code:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup certificate
+        id: setup-cert
+        shell: pwsh
+        run: |
+          # Create certificate directory
+          New-Item -ItemType Directory -Path cert -Force
+
+          # Decode and save certificate
+          $certBytes = [Convert]::FromBase64String('${{ secrets.CODE_SIGNING_CERT }}')
+          $certPath = Join-Path -Path cert -ChildPath cert.pfx
+          [IO.File]::WriteAllBytes($certPath, $certBytes)
+
+          # Import certificate
+          $securePassword = ConvertTo-SecureString -String '${{ secrets.CODE_SIGNING_PASS }}' -AsPlainText -Force
+          Import-PfxCertificate -FilePath $certPath -CertStoreLocation Cert:\CurrentUser\My -Password $securePassword
+
+          # Get thumbprint for signing
+          $cert = Get-PfxCertificate -FilePath $certPath -Password $securePassword
+          $thumbprint = $cert.Thumbprint
+          echo "CERT_THUMBPRINT=$thumbprint" >> $env:GITHUB_OUTPUT
+
+      - name: Sign changed PowerShell files
+        shell: pwsh
+        run: |
+          $thumbprint = '${{ steps.setup-cert.outputs.CERT_THUMBPRINT }}'
+
+          # Get only files changed in the most recent commit
+          $changedFiles = git diff --name-only HEAD^ HEAD | Where-Object { $_ -match '\.(ps1|psm1|psd1)$' }
+
+          foreach ($file in $changedFiles) {
+            if (Test-Path $file) {
+              Write-Host "Signing $file"
+              Set-AuthenticodeSignature -FilePath $file -Certificate (Get-Item "Cert:\CurrentUser\My\$thumbprint") -TimestampServer "http://timestamp.digicert.com"
+            }
+          }
+
+      - name: Commit signed files
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "Sign PowerShell files" -a || echo "No changes to commit"
+          git push
