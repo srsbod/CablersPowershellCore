@@ -1,0 +1,138 @@
+name: Build and Release Module
+
+on:
+  push:
+    branches: [master, main]
+    paths-ignore:
+      - "**.md"
+  pull_request:
+    types: [closed]
+    branches: [master, main]
+    paths-ignore:
+      - "**.md"
+  workflow_dispatch:
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+    if: |
+      github.event_name == 'workflow_dispatch' || 
+      github.event_name == 'push' || 
+      (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Get module version
+        id: get-version
+        shell: pwsh
+        run: |
+          $ModuleManifestPath = Get-ChildItem -Path $env:GITHUB_WORKSPACE -Filter "CablersPowershellCore.psd1" -Recurse | 
+                                Select-Object -First 1 -ExpandProperty FullName
+
+          if (-not $ModuleManifestPath) {
+            Write-Output -InputObject "Module manifest not found!"
+            exit 1
+          }
+
+          $ModuleInfo = Import-PowerShellDataFile -Path $ModuleManifestPath
+          $Version = $ModuleInfo.ModuleVersion
+
+          Write-Output -InputObject "Module version: $Version"
+          "VERSION=$Version" >> $env:GITHUB_OUTPUT
+
+      - name: Get commit history
+        id: get-history
+        shell: pwsh
+        run: |
+          # Find the latest tag (excluding the current one we're creating)
+          $LatestTag = git tag --sort=-creatordate | Select-Object -First 1
+
+          if (-not $LatestTag) {
+            # If no previous tag exists, get all commits
+            $CommitHistory = git log --pretty=format:"- %s (%h)" --abbrev-commit
+            Write-Output -InputObject "No previous tag found. Using all commit history."
+          } else {
+            # Get commits between latest tag and HEAD
+            $CommitHistory = git log "$LatestTag..HEAD" --pretty=format:"- %s (%h)" --abbrev-commit
+            Write-Output -InputObject "Found previous tag: $LatestTag"
+          }
+
+          if ([string]::IsNullOrWhiteSpace($CommitHistory)) {
+            $CommitHistory = "- No changes detected since last release"
+          }
+
+          # Convert the commit history to a format suitable for GitHub Actions output
+          $CommitHistoryFormatted = $CommitHistory -replace "`n", "%0A"
+          "COMMIT_HISTORY<<EOF" >> $env:GITHUB_OUTPUT
+          "$CommitHistoryFormatted" >> $env:GITHUB_OUTPUT
+          "EOF" >> $env:GITHUB_OUTPUT
+
+      - name: Create build package
+        id: create-package
+        shell: pwsh
+        run: |
+          $BuildDir = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath "build\CablersPowershellCore"
+          New-Item -Path $BuildDir -ItemType Directory -Force
+
+          # Define exclusion patterns
+          $ExcludePatterns = @(
+            "^\..*",      # Files/folders starting with .
+            "^tests\\.*", # Tests folder
+            "README.md"   # README file
+          )
+
+          # Get all files to copy
+          $Files = Get-ChildItem -Path $env:GITHUB_WORKSPACE -Recurse -File
+
+          foreach ($File in $Files) {
+            $RelativePath = $File.FullName.Substring("$($env:GITHUB_WORKSPACE)\".Length)
+            $Excluded = $false
+
+            foreach ($Pattern in $ExcludePatterns) {
+              if ($RelativePath -match $Pattern) {
+                $Excluded = $true
+                break
+              }
+            }
+
+            if (-not $Excluded) {
+              $DestPath = Join-Path -Path $BuildDir -ChildPath $RelativePath
+              $DestDir = Split-Path -Path $DestPath -Parent
+              
+              if (-not (Test-Path -Path $DestDir)) {
+                New-Item -Path $DestDir -ItemType Directory -Force | Out-Null
+              }
+              
+              Copy-Item -Path $File.FullName -Destination $DestPath -Force
+            }
+          }
+
+          # Create zip file
+          $ZipName = "CablersPowershellCore-${{ steps.get-version.outputs.VERSION }}.zip"
+          $ZipPath = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath $ZipName
+          Compress-Archive -Path "$BuildDir\*" -DestinationPath $ZipPath -Force
+
+          Write-Output -InputObject "Created package: $ZipPath"
+          "ZIP_PATH=$ZipPath" >> $env:GITHUB_OUTPUT
+
+      - name: Create Release
+        if: github.event_name != 'pull_request' || github.event.pull_request.merged == true
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release v${{ steps.get-version.outputs.VERSION }}
+          tag_name: v${{ steps.get-version.outputs.VERSION }}
+          files: ${{ steps.create-package.outputs.ZIP_PATH }}
+          body: |
+            # Release of CablersPowershellCore v${{ steps.get-version.outputs.VERSION }}
+
+            This release was automatically created by the GitHub Actions workflow.
+
+            ## Changes in this version
+
+            ${{ steps.get-history.outputs.COMMIT_HISTORY }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
