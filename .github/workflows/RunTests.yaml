@@ -1,0 +1,79 @@
+name: Run PowerShell Tests
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    types: [closed, opened, synchronize]
+    branches: [master, main]
+  workflow_dispatch:
+
+jobs:
+  run-tests:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Pester module
+        shell: pwsh
+        run: |
+          if (-not (Get-Module -Name Pester -ListAvailable)) {
+            Write-Output "Installing Pester module"
+            Install-Module -Name Pester -Force -SkipPublisherCheck -Scope CurrentUser -MinimumVersion 5.0
+          }
+
+          # Import the module
+          Import-Module Pester -MinimumVersion 5.0
+
+          # Confirm module loaded
+          Get-Module -Name Pester | Select-Object Name, Version
+
+      - name: Install required dependencies
+        shell: pwsh
+        run: |
+          # Check if 7z is installed - needed for Compress-7z tests
+          try {
+            $7zPath = (Get-Command 7z -ErrorAction Stop).Source
+            Write-Output "7-Zip found at: $7zPath"
+          } catch {
+            Write-Output "Installing 7-Zip..."
+            choco install 7zip -y
+          }
+
+      - name: Run Pester tests
+        shell: pwsh
+        run: |
+          # Import the module
+          $ModulePath = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath "CablersPowershellCore.psd1"
+          if (Test-Path -Path $ModulePath) {
+            Import-Module -Name $ModulePath -Force
+          } else {
+            Write-Output "Module manifest not found at $ModulePath"
+            # Look for the module in src directory if necessary
+            $SrcModulePath = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath "src\CablersPowershellCore.psd1"
+            if (Test-Path -Path $SrcModulePath) {
+              Import-Module -Name $SrcModulePath -Force
+              Write-Output "Imported module from $SrcModulePath"
+            } else {
+              Write-Output "Warning: Module manifest not found in expected locations!"
+            }
+          }
+
+          # Set up Pester configuration
+          $PesterConfig = New-PesterConfiguration
+          $PesterConfig.Run.Path = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath "tests"
+          $PesterConfig.Output.Verbosity = "Detailed"
+
+          # Run the tests
+          Write-Output "Starting Pester tests..."
+          $TestResults = Invoke-Pester -Configuration $PesterConfig -PassThru
+
+          # Output results to GitHub workflow
+          Write-Output "Test Results: $($TestResults.PassedCount) passed, $($TestResults.FailedCount) failed, $($TestResults.SkippedCount) skipped."
+
+          # Fail the workflow if any tests failed
+          if ($TestResults.FailedCount -gt 0) {
+            Write-Error "Tests failed! $($TestResults.FailedCount) test(s) failed."
+            exit 1
+          }
