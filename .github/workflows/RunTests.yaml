@@ -41,6 +41,12 @@ jobs:
             choco install 7zip -y
           }
 
+          # Register PSGallery if not already registered
+          if (-not (Get-PSRepository -Name PSGallery -ErrorAction SilentlyContinue)) {
+            Write-Output "Registering PSGallery repository"
+            Register-PSRepository -Name PSGallery -SourceLocation "https://www.powershellgallery.com/api/v2" -InstallationPolicy Trusted
+          }
+
           if (-not (Get-Module -Name PwnedPassCheck -ListAvailable)) {
             Write-Output "Installing PwnedPassCheck module"
             Install-Module -Name PwnedPassCheck -Force -SkipPublisherCheck -Scope CurrentUser -MinimumVersion 5.0
@@ -87,4 +93,3 @@ jobs:
           if ($TestResults.FailedCount -gt 0) {
             Write-Error "Tests failed! $($TestResults.FailedCount) test(s) failed."
             exit 1
-          }
