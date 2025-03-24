@@ -1,4 +1,5 @@
 .github/copilot-instructions.md
+.vscode
 
 # Certificate files
 *.pfx
