@@ -72,18 +72,18 @@ CablersPowershellCore is a PowerShell module designed to provide a collection of
 
 **Parameters**:
 
-| Name | Type | Mandatory | Position | Description | Default Value |
-|------|------|-----------|----------|-------------|---------------|
-| SourceFile | String | Yes | 0 | The path to the first file | |
-| ComparisonFile | String | Yes | 1 | The path to the second file | |
+| Name           | Type   | Mandatory | Position | Description                 | Default Value |
+| -------------- | ------ | --------- | -------- | --------------------------- | ------------- |
+| SourceFile     | String | Yes       | 0        | The path to the first file  |               |
+| ComparisonFile | String | Yes       | 1        | The path to the second file |               |
 
 **Outputs**: Object with the following structure:
 
-| Property | Type | Description |
-|----------|------|-------------|
-| FilesMatch | Boolean | True if files are identical, False otherwise |
-| SourceFile | String | Path to the source file |
-| ComparisonFile | String | Path to the comparison file |
+| Property       | Type    | Description                                  |
+| -------------- | ------- | -------------------------------------------- |
+| FilesMatch     | Boolean | True if files are identical, False otherwise |
+| SourceFile     | String  | Path to the source file                      |
+| ComparisonFile | String  | Path to the comparison file                  |
 
 ---
 
@@ -93,11 +93,11 @@ CablersPowershellCore is a PowerShell module designed to provide a collection of
 
 **Parameters**:
 
-| Name | Type | Mandatory | Position | Description | Default Value |
-|------|------|-----------|----------|-------------|---------------|
-| SourcePath | String | Yes | 0 | Path to the file or folder to compress | |
-| DestinationPath | String | Yes | 1 | Path to save the compressed file | |
-| DeleteOriginal | Switch | No | Named | Deletes the original file/folder after compression | False |
+| Name            | Type   | Mandatory | Position | Description                                        | Default Value |
+| --------------- | ------ | --------- | -------- | -------------------------------------------------- | ------------- |
+| SourcePath      | String | Yes       | 0        | Path to the file or folder to compress             |               |
+| DestinationPath | String | Yes       | 1        | Path to save the compressed file                   |               |
+| DeleteOriginal  | Switch | No        | Named    | Deletes the original file/folder after compression | False         |
 
 **Outputs**: None.
 
@@ -119,10 +119,10 @@ CablersPowershellCore is a PowerShell module designed to provide a collection of
 
 **Parameters**:
 
-| Name | Type | Mandatory | Position | Description | Default Value |
-|------|------|-----------|----------|-------------|---------------|
-| Volume | Integer | Yes | 0 | Volume level (0-100) | |
-| Mute | Switch | No | Named | Mutes the audio | False |
+| Name   | Type    | Mandatory | Position | Description          | Default Value |
+| ------ | ------- | --------- | -------- | -------------------- | ------------- |
+| Volume | Integer | Yes       | 0        | Volume level (0-100) |               |
+| Mute   | Switch  | No        | Named    | Mutes the audio      | False         |
 
 **Outputs**: None.
 
@@ -134,22 +134,22 @@ CablersPowershellCore is a PowerShell module designed to provide a collection of
 
 **Parameters**:
 
-| Name | Type | Mandatory | Position | Description | Default Value |
-|------|------|-----------|----------|-------------|---------------|
-| DriveLetter | String[ ] | No | 0 | Drive letters to query | All drives |
-| Simple | Switch | No | Named | Returns a simplified output | False |
+| Name        | Type      | Mandatory | Position | Description                 | Default Value |
+| ----------- | --------- | --------- | -------- | --------------------------- | ------------- |
+| DriveLetter | String[ ] | No        | 0        | Drive letters to query      | All drives    |
+| Simple      | Switch    | No        | Named    | Returns a simplified output | False         |
 
 **Outputs**: Custom object with the following structure:
 
-| Property | Type | Description |
-|----------|------|-------------|
-| Drive | String | Drive letter with colon (e.g., "C:") |
-| Label | String | Volume label |
-| SizeGB | Decimal | Total size in GB |
-| FreeGB | Decimal | Free space in GB |
-| UsedGB | Decimal | Used space in GB |
-| PercentUsed | Decimal | Percentage of used space |
-| PercentFree | Decimal | Percentage of free space |
+| Property    | Type    | Description                          |
+| ----------- | ------- | ------------------------------------ |
+| Drive       | String  | Drive letter with colon (e.g., "C:") |
+| Label       | String  | Volume label                         |
+| SizeGB      | Decimal | Total size in GB                     |
+| FreeGB      | Decimal | Free space in GB                     |
+| UsedGB      | Decimal | Used space in GB                     |
+| PercentUsed | Decimal | Percentage of used space             |
+| PercentFree | Decimal | Percentage of free space             |
 
 ---
 
@@ -159,21 +159,21 @@ CablersPowershellCore is a PowerShell module designed to provide a collection of
 
 **Parameters**:
 
-| Name | Type | Mandatory | Position | Description | Default Value |
-|------|------|-----------|----------|-------------|---------------|
-| SoftwareName | String | No | 0 | Filters results by software name (using regex) | |
+| Name         | Type   | Mandatory | Position | Description                                    | Default Value |
+| ------------ | ------ | --------- | -------- | ---------------------------------------------- | ------------- |
+| SoftwareName | String | No        | 0        | Filters results by software name (using regex) |               |
 
 **Outputs**: Custom object with the following structure:
 
-| Property | Type | Description |
-|----------|------|-------------|
-| Name | String | Name of the installed software |
-| Version | String | Version number |
-| Publisher | String | Software publisher |
-| InstallDate | DateTime | Date software was installed |
-| UninstallString | String | Command to uninstall the software |
-| QuietUninstallString | String | Command for silent uninstallation |
-| GUID | String | Unique identifier for the software |
+| Property             | Type     | Description                        |
+| -------------------- | -------- | ---------------------------------- |
+| Name                 | String   | Name of the installed software     |
+| Version              | String   | Version number                     |
+| Publisher            | String   | Software publisher                 |
+| InstallDate          | DateTime | Date software was installed        |
+| UninstallString      | String   | Command to uninstall the software  |
+| QuietUninstallString | String   | Command for silent uninstallation  |
+| GUID                 | String   | Unique identifier for the software |
 
 ---
 
@@ -183,10 +183,10 @@ CablersPowershellCore is a PowerShell module designed to provide a collection of
 
 **Parameters**:
 
-| Name | Type | Mandatory | Position | Description | Default Value |
-|------|------|-----------|----------|-------------|---------------|
-| Username | String | Yes | 0 | The username for the credential | |
-| Password | String | Yes | 1 | The password for the credential | |
+| Name     | Type   | Mandatory | Position | Description                     | Default Value |
+| -------- | ------ | --------- | -------- | ------------------------------- | ------------- |
+| Username | String | Yes       | 0        | The username for the credential |               |
+| Password | String | Yes       | 1        | The password for the credential |               |
 
 **Outputs**: PSCredential object.
 
@@ -198,9 +198,9 @@ CablersPowershellCore is a PowerShell module designed to provide a collection of
 
 **Parameters**:
 
-| Name | Type | Mandatory | Position | Description | Default Value |
-|------|------|-----------|----------|-------------|---------------|
-| Path | String | Yes | 0 | Path to the folder | |
+| Name | Type   | Mandatory | Position | Description        | Default Value |
+| ---- | ------ | --------- | -------- | ------------------ | ------------- |
+| Path | String | Yes       | 0        | Path to the folder |               |
 
 **Outputs**: Boolean (`$true` if the folder is empty, `$false` otherwise).
 
@@ -212,9 +212,9 @@ CablersPowershellCore is a PowerShell module designed to provide a collection of
 
 **Parameters**:
 
-| Name | Type | Mandatory | Position | Description | Default Value |
-|------|------|-----------|----------|-------------|---------------|
-| SoftwareName | String | Yes | 0 | Name of the software to uninstall | |
+| Name         | Type   | Mandatory | Position | Description                       | Default Value |
+| ------------ | ------ | --------- | -------- | --------------------------------- | ------------- |
+| SoftwareName | String | Yes       | 0        | Name of the software to uninstall |               |
 
 **Outputs**: None.
 
@@ -228,17 +228,17 @@ CablersPowershellCore is a PowerShell module designed to provide a collection of
 
 **Outputs**: PSCustomObject
 
-| Property | Type | Description |
-|----------|------|-------------|
-| AdapterName | String | Name of the network adapter |
-| Description | String | Description of the network adapter |
-| Status | String | Status of the network adapter (e.g., "Up") |
-| IPv4Address | String | Internal IP address (only if status is "Up") |
-| SubnetMask | String | Subnet mask in CIDR notation (Only if status is "Up") |
-| Gateway | String | Default gateway (Only if status is "Up") |
-| DnsServers | String[] | DNS server addresses (Only if status is "Up") |
-| PrefixLength | Int | CIDR prefix length (Only if status is "Up") |
-| IPConfiguration | String | IP configuration type (Only if status is "Up") |
+| Property        | Type     | Description                                           |
+| --------------- | -------- | ----------------------------------------------------- |
+| AdapterName     | String   | Name of the network adapter                           |
+| Description     | String   | Description of the network adapter                    |
+| Status          | String   | Status of the network adapter (e.g., "Up")            |
+| IPv4Address     | String   | Internal IP address (only if status is "Up")          |
+| SubnetMask      | String   | Subnet mask in CIDR notation (Only if status is "Up") |
+| Gateway         | String   | Default gateway (Only if status is "Up")              |
+| DnsServers      | String[] | DNS server addresses (Only if status is "Up")         |
+| PrefixLength    | Int      | CIDR prefix length (Only if status is "Up")           |
+| IPConfiguration | String   | IP configuration type (Only if status is "Up")        |
 
 ---
 
@@ -248,18 +248,18 @@ CablersPowershellCore is a PowerShell module designed to provide a collection of
 
 **Parameters**:
 
-| Name | Type | Mandatory | Value from Pipeline | Position | Description | Default Value |
-|------|------|-----------|----------|-------------|---------------|------|
-| IPAddress | [String] | No | Yes | 0 | Public IP address to query | Public IPs to check |
+| Name      | Type     | Mandatory | Value from Pipeline | Position | Description                | Default Value       |
+| --------- | -------- | --------- | ------------------- | -------- | -------------------------- | ------------------- |
+| IPAddress | [String] | No        | Yes                 | 0        | Public IP address to query | Public IPs to check |
 
 **Outputs**: [PSCustomObject]
 
-| Property | Type | Description |
-|----------|------|-------------|
-| IPAddress | String | Public IP address |
-| Country | String | Country name |
-| CountryCode | String | Country code |
-| ISP | String | Internet Service Provider |
+| Property    | Type   | Description               |
+| ----------- | ------ | ------------------------- |
+| IPAddress   | String | Public IP address         |
+| Country     | String | Country name              |
+| CountryCode | String | Country code              |
+| ISP         | String | Internet Service Provider |
 
 ---
 
@@ -279,9 +279,9 @@ CablersPowershellCore is a PowerShell module designed to provide a collection of
 
 **Parameters**:
 
-| Name | Type | Mandatory | Position | Description | Default Value |
-|------|------|-----------|----------|-------------|---------------|
-| CopyToClipboard | Switch | No | Named | Copies the public IP address to clipboard | False |
+| Name            | Type   | Mandatory | Position | Description                               | Default Value |
+| --------------- | ------ | --------- | -------- | ----------------------------------------- | ------------- |
+| CopyToClipboard | Switch | No        | Named    | Copies the public IP address to clipboard | False         |
 
 **Outputs**: String (Public IP address).
 
@@ -303,9 +303,9 @@ CablersPowershellCore is a PowerShell module designed to provide a collection of
 
 **Parameters**:
 
-| Name | Type | Mandatory | Position | Description | Default Value |
-|------|------|-----------|----------|-------------|---------------|
-| Path | String | Yes | 0 | Path to the directory | |
+| Name | Type   | Mandatory | Position | Description           | Default Value |
+| ---- | ------ | --------- | -------- | --------------------- | ------------- |
+| Path | String | Yes       | 0        | Path to the directory |               |
 
 **Outputs**: [String] (List of removed empty folders).
 
@@ -317,18 +317,18 @@ CablersPowershellCore is a PowerShell module designed to provide a collection of
 
 **Parameters**:
 
-| Name | Type | Mandatory | Position | Description | Default Value |
-|------|------|-----------|----------|-------------|---------------|
-| Simple | Switch | Yes (ParameterSet) | Named | Generates a simple password (lowercase and numbers) | |
-| Strong | Switch | Yes (ParameterSet) | Named | Generates a strong password (mixed case, numbers, symbols) | |
-| Random | Switch | Yes (ParameterSet) | Named | Generates a random password with customizable options | |
-| Length | Int | No | Named | Length of the password when using -Random | 12 |
-| NoSymbols | Switch | No | Named | Excludes special characters from random passwords | False |
-| PwnCheck | Switch | No | Named | Checks if the password has been exposed in data breaches | False |
-| NumberOfPasswords | Int | No | Named | Number of passwords to generate | 1 |
-| OutputPath | String | No | Named | Path to save passwords to a file | |
-| CopyToClipboard | Switch | No | Named | Copies the password to clipboard | False |
-| SleepTime | Int | No | Named | Delay between API calls in milliseconds | 100 |
+| Name              | Type   | Mandatory          | Position | Description                                                | Default Value |
+| ----------------- | ------ | ------------------ | -------- | ---------------------------------------------------------- | ------------- |
+| Simple            | Switch | Yes (ParameterSet) | Named    | Generates a simple password (lowercase and numbers)        |               |
+| Strong            | Switch | Yes (ParameterSet) | Named    | Generates a strong password (mixed case, numbers, symbols) |               |
+| Random            | Switch | Yes (ParameterSet) | Named    | Generates a random password with customizable options      |               |
+| Length            | Int    | No                 | Named    | Length of the password when using -Random                  | 12            |
+| NoSymbols         | Switch | No                 | Named    | Excludes special characters from random passwords          | False         |
+| PwnCheck          | Switch | No                 | Named    | Checks if the password has been exposed in data breaches   | False         |
+| NumberOfPasswords | Int    | No                 | Named    | Number of passwords to generate                            | 1             |
+| OutputPath        | String | No                 | Named    | Path to save passwords to a file                           |               |
+| CopyToClipboard   | Switch | No                 | Named    | Copies the password to clipboard                           | False         |
+| SleepTime         | Int    | No                 | Named    | Delay between API calls in milliseconds                    | 100           |
 
 **Outputs**: String or String[] (Generated password(s)).
 
@@ -344,8 +344,8 @@ CablersPowershellCore is a PowerShell module designed to provide a collection of
 
 **Parameters**:
 
-| Name | Type | Mandatory | Position | Description | Default Value |
-|------|------|-----------|----------|-------------|---------------|
-| PrefixLength | Int | Yes | 0 | CIDR prefix to convert (0-32) | |
+| Name         | Type | Mandatory | Position | Description                   | Default Value |
+| ------------ | ---- | --------- | -------- | ----------------------------- | ------------- |
+| PrefixLength | Int  | Yes       | 0        | CIDR prefix to convert (0-32) |               |
 
 **Outputs**: String (Subnet mask in dotted-decimal notation).
