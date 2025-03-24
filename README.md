@@ -21,6 +21,14 @@ CablersPowershellCore is a PowerShell module designed to provide a collection of
     - [New-Credential](#new-credential)
     - [Test-EmptyFolder](#test-emptyfolder)
     - [Uninstall-Software](#uninstall-software)
+    - [Get-InternalIP](#get-internalip)
+    - [Get-IPAddressLocation](#get-ipaddresslocation)
+    - [Get-LastBootTime](#get-lastboottime)
+    - [Get-PublicIP](#get-publicip)
+    - [Get-Uptime](#get-uptime)
+    - [Remove-EmptyFolders](#remove-emptyfolders)
+    - [New-Password](#new-password)
+    - [Convert-PrefixToSubnetMask](#convert-prefixtosubnetmask)
 
 ---
 
@@ -168,3 +176,93 @@ CablersPowershellCore is a PowerShell module designed to provide a collection of
 - `SoftwareName` (String, Mandatory, Position: 0): Name of the software to uninstall.
 
 **Outputs**: None.
+
+---
+
+### Get-InternalIP
+
+**Description**: Retrieves the internal IP address of the system.
+
+**Parameters**: None.
+
+**Outputs**: String (Internal IP address).
+
+---
+
+### Get-IPAddressLocation
+
+**Description**: Retrieves the geographical location of the system's public IP address.
+
+**Parameters**: None.
+
+**Outputs**: Custom object with properties for country, region, city, etc.
+
+---
+
+### Get-LastBootTime
+
+**Description**: Retrieves the last boot time of the system.
+
+**Parameters**: None.
+
+**Outputs**: DateTime (Last boot time).
+
+---
+
+### Get-PublicIP
+
+**Description**: Retrieves the public IP address of the system.
+
+**Parameters**: None.
+
+**Outputs**: String (Public IP address).
+
+---
+
+### Get-Uptime
+
+**Description**: Retrieves the system uptime.
+
+**Parameters**: None.
+
+**Outputs**: TimeSpan (Duration since the last boot).
+
+---
+
+### Remove-EmptyFolders
+
+**Description**: Removes empty folders from a specified directory.
+
+**Parameters**:
+
+- `Path` (String, Mandatory, Position: 0): Path to the directory.
+
+**Outputs**: None.
+
+---
+
+### New-Password
+
+**Description**: Generates a new random password.
+
+**Parameters**:
+
+- `Length` (Integer, Optional, Position: 0): Length of the password. Defaults to 12.
+
+**Outputs**: String (Generated password).
+
+---
+
+### Convert-PrefixToSubnetMask
+
+**Description**: Converts a CIDR prefix to a subnet mask. e.g.
+
+``` text
+  24 -> 255.255.255.0
+ ```
+
+**Parameters**:
+
+- `PrefixLength` (Integer, Mandatory, Position: 0): CIDR prefix to convert.
+
+**Outputs**: String (Subnet mask in dotted-decimal notation).
