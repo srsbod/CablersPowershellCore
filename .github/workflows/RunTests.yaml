@@ -1,11 +1,11 @@
 name: Run PowerShell Tests
 
 on:
-  push:
-    branches: [master, main]
-  pull_request:
-    types: [closed, opened, synchronize]
-    branches: [master, main]
+  #push:
+  #  branches: [master, main]
+  #pull_request:
+  #  types: [closed, opened, synchronize]
+  #  branches: [master, main]
   workflow_dispatch:
 
 jobs:

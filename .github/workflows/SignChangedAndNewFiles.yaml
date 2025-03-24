@@ -1,11 +1,11 @@
 name: Sign Changed and New PowerShell Scripts
 
 on:
-  push:
-    branches: [master, main]
-  pull_request:
-    types: [closed]
-    branches: [master, main]
+  #push:
+  #  branches: [master, main]
+  #pull_request:
+  #  types: [closed]
+  #  branches: [master, main]
   workflow_dispatch:
 
 jobs:
