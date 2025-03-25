@@ -41,7 +41,8 @@ function Test-EmptyFolder {
 
     process {
         $items = Get-ChildItem -LiteralPath $Path -Force
-        Write-Output ($items.Count -eq 0)
+        $isEmpty = ($items.Count -eq 0)
+        Write-Output $isEmpty
     }
 
     end {
