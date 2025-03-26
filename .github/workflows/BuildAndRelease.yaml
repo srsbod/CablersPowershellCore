@@ -3,41 +3,22 @@ name: Build and Release Module
 on:
   push:
     branches: [master, main]
-    paths-ignore:
-      - "**.md"
-      - ".gitignore"
-      - ".github/**"
-  pull_request:
-    types: [closed]
-    branches: [master, main]
-    paths-ignore:
-      - "**.md"
-      - ".gitignore"
-      - ".github/workflows/**"
-  workflow_dispatch:
+    paths:
+      - "**/*.psd1"
 
 jobs:
   build-and-release:
     runs-on: windows-latest
-    if: |
-      github.event_name == 'workflow_dispatch' || 
-      (github.event_name == 'push' && contains(github.event.head_commit.message, 'bump version'))
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Get module version
+      - name: Get Module Version
         id: get-version
         shell: pwsh
         run: |
           $ModuleManifestPath = Get-ChildItem -Path $env:GITHUB_WORKSPACE -Filter "CablersPowershellCore.psd1" -Recurse | 
                                 Select-Object -First 1 -ExpandProperty FullName
-
-          if (-not $ModuleManifestPath) {
-            Write-Output -InputObject "Module manifest not found!"
-            exit 1
-          }
 
           $ModuleInfo = Import-PowerShellDataFile -Path $ModuleManifestPath
           $Version = $ModuleInfo.ModuleVersion
@@ -45,7 +26,7 @@ jobs:
           Write-Output -InputObject "Module version: $Version"
           "VERSION=$Version" >> $env:GITHUB_OUTPUT
 
-      - name: Check version change
+      - name: Check Version Change
         id: check-version
         shell: pwsh
         run: |
@@ -68,11 +49,11 @@ jobs:
           $VersionChanged = [System.Version]$CurrentVersion -gt [System.Version]$LatestVersion
           Write-Output -InputObject "Version changed: $VersionChanged"
 
-          # Set output
-          "VERSION_CHANGED=$VersionChanged" >> $env:GITHUB_OUTPUT
           If (-not $VersionChanged) {
             Write-Output -InputObject "No version change detected. Skipping release."
             exit 0
+          } else {
+            "VERSION_CHANGED=$VersionChanged" >> $env:GITHUB_OUTPUT
           }
 
       - name: Get commit history
