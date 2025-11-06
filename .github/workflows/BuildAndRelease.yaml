@@ -5,6 +5,7 @@ on:
     branches: [master, main]
     paths:
       - "**/*.psd1"
+  workflow_dispatch:
 
 jobs:
   build-and-release:
