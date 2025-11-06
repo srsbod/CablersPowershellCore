@@ -156,7 +156,6 @@ jobs:
           "ZIP_PATH=$ZipPath" >> $env:GITHUB_OUTPUT
 
       - name: Publish to PowerShell Gallery
-        if: ${{ secrets.PS_GALLERY_API_KEY != '' }}
         shell: pwsh
         env:
           PS_GALLERY_API_KEY: ${{ secrets.PS_GALLERY_API_KEY }}
