@@ -155,6 +155,37 @@ jobs:
           Write-Output -InputObject "`nCreated package: $ZipPath"
           "ZIP_PATH=$ZipPath" >> $env:GITHUB_OUTPUT
 
+      - name: Publish to PowerShell Gallery
+        if: ${{ secrets.PS_GALLERY_API_KEY != '' }}
+        shell: pwsh
+        env:
+          PS_GALLERY_API_KEY: ${{ secrets.PS_GALLERY_API_KEY }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:PS_GALLERY_API_KEY)) {
+              Write-Output "PS_GALLERY_API_KEY secret is not configured. Skipping publish to PowerShell Gallery."
+              exit 0
+          }
+
+          $repository = 'PSGallery'
+          $modulePath = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath 'build/CablersPowershellCore'
+
+          if (-not (Get-PSRepository -Name $repository -ErrorAction SilentlyContinue)) {
+              Register-PSRepository -Name $repository -SourceLocation 'https://www.powershellgallery.com/api/v2/' -InstallationPolicy Trusted
+              Write-Output "Registered PSGallery repository"
+          }
+          else {
+              Set-PSRepository -Name $repository -InstallationPolicy Trusted
+          }
+
+          try {
+              Publish-Module -Path $modulePath -Repository $repository -NuGetApiKey $env:PS_GALLERY_API_KEY -Force -ErrorAction Stop
+              Write-Output "Published CablersPowershellCore to PowerShell Gallery."
+          }
+          catch {
+              Write-Output "PowerShell Gallery publish failed: $($_.Exception.Message)"
+              throw
+          }
+
       - name: Create Release
         if: github.event_name != 'pull_request' || github.event.pull_request.merged == true
         uses: softprops/action-gh-release@v1

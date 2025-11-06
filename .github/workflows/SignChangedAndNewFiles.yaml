@@ -10,9 +10,12 @@ on:
 
 jobs:
   sign-changed-files:
+    # Workflow intentionally disabled; set to ${{ true }} to re-enable signing
+    if: ${{ false }}
     runs-on: windows-latest
     # Only run on direct commits, merged PRs, or manual triggers
-    if: github.event_name != 'pull_request' || github.event.pull_request.merged == true
+    # Original condition retained for reference while workflow is disabled
+    # if: github.event_name != 'pull_request' || github.event.pull_request.merged == true
     steps:
       - name: Checkout code
         uses: actions/checkout@v3

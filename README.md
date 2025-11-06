@@ -1,5 +1,7 @@
 # CablersPowershellCore
 
+[![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC_BY--NC--SA_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+
 CablersPowershellCore is a PowerShell module designed to provide a collection of utilities for managing and automating tasks across devices. It includes functions for managing audio, disk space, installed software, and more.
 
 ---
@@ -32,12 +34,7 @@ CablersPowershellCore is a PowerShell module designed to provide a collection of
 ## Prerequisites
 
 1. **PowerShell Version**: This module requires PowerShell 5.1 or later.
-2. **Code Signing Certificate**: The CablersPowershell code signing `.cer` file must be installed on the system to validate the module's authenticity.
-   - To install the certificate:
-     1. Double-click the `.cer` file.
-     2. Follow the prompts to install it into the "Trusted Root Certification Authorities" store.
-
-3. **Required Modules**:
+2. **Required Modules**:
    - `PwnedPassCheck` (Install via PowerShell Gallery):
 
      ```powershell
@@ -45,6 +42,13 @@ CablersPowershellCore is a PowerShell module designed to provide a collection of
      ```
 
 ---
+
+## Execution Policy & Code Signing
+
+- **Unsigned distribution**: Module files are no longer Authenticode signed. After downloading from a trusted source, run `Get-ChildItem -Recurse *.ps1 | Unblock-File` to mark them as safe.
+- **Temporarily relax policy**: Use `Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned` in an elevated session when testing on freshly provisioned hosts, then close the session to restore the previous policy.
+
+This module sets `RequireLicenseAcceptance = $true` in the manifest. Installation via PowerShellGet prompts users to review and accept the license (see [License](#license)).
 
 ## Installation
 
@@ -349,3 +353,19 @@ CablersPowershellCore is a PowerShell module designed to provide a collection of
 | PrefixLength | Int  | Yes       | 0        | CIDR prefix to convert (0-32) |               |
 
 **Outputs**: String (Subnet mask in dotted-decimal notation).
+
+---
+
+## Release Checklist
+
+- [ ] Run the integration tests locally or via `Invoke-Pester`.
+- [ ] Update `CablersPowershellCore.psd1` with the new `ModuleVersion` and release notes.
+- [ ] Confirm `README.md` reflects any new parameters or dependencies.
+- [ ] Verify `.github/workflows/BuildAndRelease.yaml` secrets (`PS_GALLERY_API_KEY`) are present before tagging.
+- [ ] Create a signed or unsigned package as required and push tags to trigger automation.
+
+---
+
+## License
+
+This project is licensed under the [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](https://creativecommons.org/licenses/by-nc-sa/4.0/). Any installation from the PowerShell Gallery or manual distribution requires explicit acceptance of the license terms.
