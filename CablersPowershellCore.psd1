@@ -12,7 +12,7 @@
     RootModule            = 'CablersPowershellCore.psm1'
 
     # Version number of this module.
-    ModuleVersion         = '2.0.0'
+    ModuleVersion         = '2.0.1'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -74,19 +74,24 @@
         'Compare-Files',
         'Compress-7z',
         'Convert-PrefixToSubnetMask',
+        'Convert-StringToURI',
         'Get-AudioVolume',
         'Get-DiskSpace',
         'Get-InstalledSoftware',
         'Get-InternalIP',
         'Get-IPAddressLocation',
         'Get-LastBootTime',
+        'Get-LongestCommonPrefix',
         'Get-PublicIP',
         'Get-Uptime',
         'New-Credential',
         'New-Password',
         'Remove-EmptyFolders',
         'Set-AudioVolume',
+        'Set-Owner',
+        'Split-String',
         'Test-EmptyFolder',
+        'Test-IsAdmin',
         'Uninstall-Software'
     )
 

@@ -8,26 +8,33 @@ CablersPowershellCore is a PowerShell module designed to provide a collection of
 
 - [CablersPowershellCore](#cablerspowershellcore)
   - [Prerequisites](#prerequisites)
+  - [Execution Policy \& Code Signing](#execution-policy--code-signing)
   - [Installation](#installation)
+    - [Install from PowerShell Gallery (Recommended)](#install-from-powershell-gallery-recommended)
     - [Manual Installation](#manual-installation)
   - [Functions Overview](#functions-overview)
     - [Compare-Files](#compare-files)
     - [Compress-7z](#compress-7z)
+    - [Convert-PrefixToSubnetMask](#convert-prefixtosubnetmask)
+    - [Convert-StringToURI](#convert-stringtouri)
     - [Get-AudioVolume](#get-audiovolume)
-    - [Set-AudioVolume](#set-audiovolume)
     - [Get-DiskSpace](#get-diskspace)
     - [Get-InstalledSoftware](#get-installedsoftware)
-    - [New-Credential](#new-credential)
-    - [Test-EmptyFolder](#test-emptyfolder)
-    - [Uninstall-Software](#uninstall-software)
     - [Get-InternalIP](#get-internalip)
     - [Get-IPAddressLocation](#get-ipaddresslocation)
     - [Get-LastBootTime](#get-lastboottime)
+    - [Get-LongestCommonPrefix](#get-longestcommonprefix)
     - [Get-PublicIP](#get-publicip)
     - [Get-Uptime](#get-uptime)
-    - [Remove-EmptyFolders](#remove-emptyfolders)
+    - [New-Credential](#new-credential)
     - [New-Password](#new-password)
-    - [Convert-PrefixToSubnetMask](#convert-prefixtosubnetmask)
+    - [Remove-EmptyFolders](#remove-emptyfolders)
+    - [Set-AudioVolume](#set-audiovolume)
+    - [Set-Owner](#set-owner)
+    - [Split-String](#split-string)
+    - [Test-EmptyFolder](#test-emptyfolder)
+    - [Test-IsAdmin](#test-isadmin)
+    - [Uninstall-Software](#uninstall-software)
 
 ---
 
@@ -45,12 +52,27 @@ CablersPowershellCore is a PowerShell module designed to provide a collection of
 
 ## Execution Policy & Code Signing
 
-- **Unsigned distribution**: Module files are no longer Authenticode signed. After downloading from a trusted source, run `Get-ChildItem -Recurse *.ps1 | Unblock-File` to mark them as safe.
+- **PowerShell Gallery installation**: When installing from the PowerShell Gallery, the module is automatically trusted through the gallery's verification process.
+- **Manual installation**: If you download the module manually, run `Get-ChildItem -Recurse *.ps1 | Unblock-File` in the module directory to mark files as safe.
 - **Temporarily relax policy**: Use `Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned` in an elevated session when testing on freshly provisioned hosts, then close the session to restore the previous policy.
 
 This module sets `RequireLicenseAcceptance = $true` in the manifest. Installation via PowerShellGet prompts users to review and accept the license (see [License](#license)).
 
 ## Installation
+
+### Install from PowerShell Gallery (Recommended)
+
+The module is published to the [PowerShell Gallery](https://www.powershellgallery.com/packages/CablersPowershellCore). Install it with:
+
+```powershell
+Install-Module -Name CablersPowershellCore -Scope CurrentUser
+```
+
+After installation, import the module:
+
+```powershell
+Import-Module -Name CablersPowershellCore
+```
 
 ### Manual Installation
 
@@ -58,9 +80,7 @@ This module sets `RequireLicenseAcceptance = $true` in the manifest. Installatio
    - For all users: `C:\Program Files\WindowsPowerShell\Modules`
    - For the current user: `C:\Users\<YourUsername>\Documents\WindowsPowerShell\Modules`
 
-2. Ensure the `.cer` file for code signing is installed as described in the prerequisites.
-
-3. Import the module into your session:
+2. Import the module into your session:
 
    ```powershell
    Import-Module -Name CablersPowershellCore
@@ -353,6 +373,85 @@ This module sets `RequireLicenseAcceptance = $true` in the manifest. Installatio
 | PrefixLength | Int  | Yes       | 0        | CIDR prefix to convert (0-32) |               |
 
 **Outputs**: String (Subnet mask in dotted-decimal notation).
+
+---
+
+### Convert-StringToURI
+
+**Description**: Converts a string to a URI-encoded (URL-encoded) format using `EscapeDataString`. Useful for encoding query parameters or path components for URLs.
+
+**Parameters**:
+
+| Name        | Type   | Mandatory | Position | Description                       | Default Value |
+| ----------- | ------ | --------- | -------- | --------------------------------- | ------------- |
+| inputString | String | Yes       | 0        | The string to encode for URI use  |               |
+
+**Aliases**: `URL`
+
+**Outputs**: String (URI-encoded string).
+
+---
+
+### Get-LongestCommonPrefix
+
+**Description**: Finds the longest common prefix string amongst an array of strings. Useful for comparing file paths or similar strings.
+
+**Parameters**:
+
+| Name    | Type     | Mandatory | Position | Description                                     | Default Value |
+| ------- | -------- | --------- | -------- | ----------------------------------------------- | ------------- |
+| Strings | String[] | Yes       | 0        | An array of strings to find common prefix among |               |
+
+**Outputs**: String (Longest common prefix).
+
+**Example**:
+
+```powershell
+Get-LongestCommonPrefix -Strings @("flower", "flow", "flight")
+# Output: "fl"
+```
+
+---
+
+### Set-Owner
+
+**Description**: Sets the owner of a file or folder. Requires administrative privileges.
+
+**Parameters**:
+
+| Name  | Type   | Mandatory | Position | Description                                        | Default Value          |
+| ----- | ------ | --------- | -------- | -------------------------------------------------- | ---------------------- |
+| Path  | String | Yes       | 0        | Path to the file or folder                         |                        |
+| Owner | String | No        | 1        | Owner to set (in format DOMAIN\User or BUILTIN\Group) | BUILTIN\Administrators |
+
+**Outputs**: None.
+
+---
+
+### Split-String
+
+**Description**: Splits a string based on a specified substring, returning either the portion before or after the split point. Optionally returns both parts.
+
+**Parameters**:
+
+| Name        | Type   | Mandatory | Position | Parameter Set | Description                                     | Default Value |
+| ----------- | ------ | --------- | -------- | ------------- | ----------------------------------------------- | ------------- |
+| InputString | String | Yes       | 0        | Both          | The string to split                             |               |
+| SplitBefore | String | Yes       | Named    | Before        | Returns everything up to (not including) this substring |               |
+| SplitAfter  | String | Yes       | 1        | After         | Returns everything up to and including this substring |               |
+| ReturnBoth  | Switch | No        | Named    | Both          | Returns both parts of the split                 | False         |
+
+**Outputs**: String or String[] (Split portion(s) of the input string).
+
+---
+
+### Test-IsAdmin
+
+**Description**: Tests if the current PowerShell session is running with administrative privileges. Works on both Windows PowerShell and PowerShell Core.
+
+**Parameters**: None.
+
+**Outputs**: Boolean (`$true` if running as administrator, `$false` otherwise).
 
 ---
 
