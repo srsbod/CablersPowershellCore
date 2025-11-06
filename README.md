@@ -67,13 +67,13 @@ The module is published to the [PowerShell Gallery](https://www.powershellgaller
 - All Users (requires admin, allows use by System)
 
   ```powershell
-  Install-Module -Name CablersPowershellCore -Scope AllUsers
+  Install-Module -Name CablersPowershellCore -Scope AllUsers -AllowClobber
   ```
 
 - Current User
 
   ```powershell
-  Install-Module -Name CablersPowershellCore -Scope CurrentUser
+  Install-Module -Name CablersPowershellCore -Scope CurrentUser -AllowClobber
   ```
 
 After installation, import the module:
@@ -81,6 +81,8 @@ After installation, import the module:
 ```powershell
 Import-Module -Name CablersPowershellCore
 ```
+
+Note: Allow Clobber is required in Powershell Core due to the inclusion of a few commands that exist in Core but not Windows Powershell. This is currently only `Get-Uptime` which behaves exactly the same as the one built into Powershell Core.
 
 ### Manual Installation
 
