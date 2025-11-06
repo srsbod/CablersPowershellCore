@@ -64,9 +64,17 @@ This module sets `RequireLicenseAcceptance = $true` in the manifest. Installatio
 
 The module is published to the [PowerShell Gallery](https://www.powershellgallery.com/packages/CablersPowershellCore). Install it with:
 
-```powershell
-Install-Module -Name CablersPowershellCore -Scope CurrentUser
-```
+- All Users (requires admin, allows use by System)
+
+  ```powershell
+  Install-Module -Name CablersPowershellCore -Scope AllUsers
+  ```
+
+- Current User
+
+  ```powershell
+  Install-Module -Name CablersPowershellCore -Scope CurrentUser
+  ```
 
 After installation, import the module:
 
