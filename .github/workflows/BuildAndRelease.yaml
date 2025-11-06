@@ -156,6 +156,96 @@ jobs:
           Write-Output -InputObject "`nCreated package: $ZipPath"
           "ZIP_PATH=$ZipPath" >> $env:GITHUB_OUTPUT
 
+      - name: Install required modules
+        shell: pwsh
+        run: |
+          # Ensure manifest-defined dependencies are present before publishing
+          $manifestPath = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath 'CablersPowershellCore.psd1'
+
+          if (-not (Test-Path -Path $manifestPath)) {
+            Write-Output -InputObject "Module manifest not found at $manifestPath"
+            throw "Missing module manifest"
+          }
+
+          $moduleData = Import-PowerShellDataFile -Path $manifestPath
+          $requiredModules = $moduleData.RequiredModules
+
+          if (-not $requiredModules -or $requiredModules.Count -eq 0) {
+            Write-Output -InputObject 'No required modules defined in manifest.'
+            return
+          }
+
+          foreach ($requiredModule in $requiredModules) {
+            $moduleName = $null
+            $installParameters = @{
+              Repository  = 'PSGallery'
+              Scope       = 'CurrentUser'
+              Force       = $true
+              AllowClobber = $true
+              ErrorAction = 'Stop'
+            }
+
+            if ($requiredModule -is [string]) {
+              $moduleName = $requiredModule
+            }
+            elseif ($requiredModule -is [hashtable]) {
+              if ($requiredModule.ContainsKey('ModuleName')) {
+                $moduleName = $requiredModule.ModuleName
+              }
+
+              if ($requiredModule.ContainsKey('ModuleVersion')) {
+                $installParameters['RequiredVersion'] = $requiredModule.ModuleVersion
+              }
+              elseif ($requiredModule.ContainsKey('RequiredVersion')) {
+                $installParameters['RequiredVersion'] = $requiredModule.RequiredVersion
+              }
+              elseif ($requiredModule.ContainsKey('MinimumVersion')) {
+                $installParameters['MinimumVersion'] = $requiredModule.MinimumVersion
+              }
+
+              if ($requiredModule.ContainsKey('MaximumVersion')) {
+                $installParameters['MaximumVersion'] = $requiredModule.MaximumVersion
+              }
+            }
+
+            if ([string]::IsNullOrWhiteSpace($moduleName)) {
+              Write-Output -InputObject 'Encountered required module entry without ModuleName; skipping.'
+              continue
+            }
+
+            Write-Output -InputObject "Ensuring module '$moduleName' is available."
+
+            try {
+              $installedModule = Get-Module -ListAvailable -Name $moduleName
+
+              if ($installParameters.ContainsKey('RequiredVersion')) {
+                $targetVersion = [version]$installParameters['RequiredVersion']
+                $installedModule = $installedModule | Where-Object { $_.Version -eq $targetVersion }
+              }
+              elseif ($installParameters.ContainsKey('MinimumVersion')) {
+                $minVersion = [version]$installParameters['MinimumVersion']
+                $installedModule = $installedModule | Where-Object { $_.Version -ge $minVersion }
+              }
+
+              if ($installParameters.ContainsKey('MaximumVersion') -and $installedModule) {
+                $maxVersion = [version]$installParameters['MaximumVersion']
+                $installedModule = $installedModule | Where-Object { $_.Version -le $maxVersion }
+              }
+
+              if (-not $installedModule) {
+                Write-Output -InputObject "Module '$moduleName' not found locally. Installing from PSGallery."
+                Install-Module -Name $moduleName @installParameters
+              }
+              else {
+                Write-Output -InputObject "Module '$moduleName' already installed."
+              }
+            }
+            catch {
+              Write-Output -InputObject "Failed to install module '$moduleName': $($_.Exception.Message)"
+              throw
+            }
+          }
+
       - name: Publish to PowerShell Gallery
         shell: pwsh
         env:
