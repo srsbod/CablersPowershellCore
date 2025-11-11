@@ -28,6 +28,7 @@ CablersPowershellCore is a PowerShell module designed to provide a collection of
     - [Get-Uptime](#get-uptime)
     - [New-Credential](#new-credential)
     - [New-Password](#new-password)
+    - [New-Passphrase](#new-passphrase)
     - [Remove-EmptyFolders](#remove-emptyfolders)
     - [Set-AudioVolume](#set-audiovolume)
     - [Set-Owner](#set-owner)
@@ -365,6 +366,34 @@ Note: Allow Clobber is required in Powershell Core due to the inclusion of a few
 | SleepTime         | Int    | No                 | Named    | Delay between API calls in milliseconds                    | 100           |
 
 **Outputs**: String or String[] (Generated password(s)).
+
+---
+
+### New-Passphrase
+
+**Description**: Generates memorable passphrases by combining random words from a word list with customizable separators, case formatting, and optional numbers.
+
+**Parameters**:
+
+| Name                 | Type   | Mandatory | Position | Description                                                 | Default Value |
+| -------------------- | ------ | --------- | -------- | ----------------------------------------------------------- | ------------- |
+| WordCount            | Int    | No        | Named    | Number of words to include in the passphrase                | 3             |
+| Separator            | String | No        | Named    | Character to separate words ("-", "_", "None", ".", ",", "+", "=") | "-"           |
+| Case                 | String | No        | Named    | Case formatting ("Lowercase", "Uppercase", "Titlecase", "RandomCase") | "Titlecase"   |
+| ExcludeNumbers       | Switch | No        | Named    | Excludes numbers from the passphrase                        | False         |
+| PwnCheck             | Switch | No        | Named    | Checks if the passphrase has been exposed in data breaches  | False         |
+| NumberOfPassphrases  | Int    | No        | Named    | Number of passphrases to generate                           | 1             |
+| OutputPath           | String | No        | Named    | Path to save passphrases to a file                          |               |
+| CopyToClipboard      | Switch | No        | Named    | Copies the passphrase to clipboard                          | False         |
+
+**Outputs**: String or String[] (Generated passphrase(s)).
+
+**Example**:
+
+```powershell
+New-Passphrase -WordCount 4 -Separator "_" -Case Uppercase
+# Output: "CORRECT_HORSE_BATTERY_STAPLE42"
+```
 
 ---
 

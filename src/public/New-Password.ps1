@@ -1,8 +1,5 @@
 #Requires -Module PwnedPassCheck
 
-#TODO: Support for passphrases?
-#TODO: Test rate limiting better, possibly reduce/remove it to speed up the process
-
 <#
 .SYNOPSIS
 Generates one or more passwords based on the specified parameters.
@@ -84,7 +81,7 @@ function New-Password {
         [Parameter(Mandatory = $false)]
         [Switch]$CopyToClipboard,
         [Parameter(Mandatory = $false)]
-        [int]$SleepTime = 100 # In case it needs to be adjusted or increased to avoid rate limiting
+        [int]$SleepTime = 0 # In case it needs to be adjusted or increased to avoid rate limiting
     )
 
     begin {
@@ -101,15 +98,12 @@ function New-Password {
 
             if ($Simple) {
                 $Password = Invoke-RestMethod -Uri "https://www.dinopass.com/password/simple"
-            }
-            elseif ($Strong) {
+            } elseif ($Strong) {
                 $Password = Invoke-RestMethod -Uri "https://www.dinopass.com/password/strong"
-            }
-            elseif ($Random) {
-                If ($NoSymbols) {
+            } elseif ($Random) {
+                if ($NoSymbols) {
                     $Password = Invoke-RestMethod -Uri "https://api.genratr.com/?length=$Length&uppercase&lowercase&numbers" | Select-Object -ExpandProperty password
-                }
-                else {
+                } else {
                     $Password = Invoke-RestMethod -Uri "https://api.genratr.com/?length=$Length&uppercase&lowercase&special&numbers" | Select-Object -ExpandProperty password
                 }
             }
@@ -118,7 +112,7 @@ function New-Password {
                 $Pwned = Get-PwnedPassword $Password | Select-Object -ExpandProperty SeenCount
                 if ($Pwned -gt 0) {
                     Write-Host "Password $Password is pwned, generating a new one instead - Pwned count: $Pwned" -ForegroundColor Yellow
-                    Continue
+                    continue
                 }
             }
 
@@ -130,7 +124,7 @@ function New-Password {
             Start-Sleep -Milliseconds $SleepTime
         }
 
-        If ($OutputPath) {
+        if ($OutputPath) {
             $Passwords | Out-File $OutputPath -Append -Force
         }
 
