@@ -25,7 +25,7 @@
     Retrieves disk space information in a simple string format.
 
 #>
-Function Get-DiskSpace {
+function Get-DiskSpace {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $false, Position = 0)]
@@ -35,10 +35,10 @@ Function Get-DiskSpace {
         [switch]$Simple = $false
     )
 
-    Begin {
+    begin {
         
-        if ($PSVersionTable.Platform -ne 'Win32NT') {
-            Throw "This function is only supported on Windows platforms."
+        if ($PSVersionTable.Platform -ne 'Win32NT' -and $PSVersionTable.PSEdition -ne 'Desktop') {
+            throw "This function is only supported on Windows platforms."
         }
 
         # Format the drive letters as a single uppercase letter, remove any duplicates and remove any : or \ characters
@@ -50,19 +50,19 @@ Function Get-DiskSpace {
         if ($DriveLetter) {
             foreach ($letter in $DriveLetter) {
                 if ($letter.Length -ne 1 -or $letter -notmatch '^[A-Z]$') {
-                    Throw "Invalid drive letter: $letter - Drive letters must be in format 'C', 'C:', or 'C:\'"
+                    throw "Invalid drive letter: $letter - Drive letters must be in format 'C', 'C:', or 'C:\'"
                 }
             }
         }
     }
 
-    Process {
+    process {
 
 
         $drives = Get-PSDrive -PSProvider FileSystem | Where-Object { $_.Root -match "^[A-Z]:\\$" -and $null -eq $_.displayroot }
         $output = @()
 
-        If ($DriveLetter) {
+        if ($DriveLetter) {
             $drives = $drives | Where-Object { $DriveLetter -contains $_.Name }
         }
 
@@ -76,8 +76,7 @@ Function Get-DiskSpace {
 
             if ($Simple) {
                 $Output += "$($drive.Root) - $($UsedSpace.ToString('0')) GB of $($TotalSpace.ToString('0')) GB used, $($FreeSpace.ToString('0')) GB ($($PercentFree.ToString())) remaining"
-            }
-            else {
+            } else {
                 $Output += [PSCustomObject]@{
                     Drive       = $Drive.Root
                     UsedSpace   = "$($UsedSpace.ToString('0')) GB"
@@ -93,7 +92,7 @@ Function Get-DiskSpace {
 
     }
 
-    End {
+    end {
 
     }
 
