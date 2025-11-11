@@ -14,6 +14,7 @@ characters, case formatting, and optional pwned password checking.
 
 .PARAMETER WordCount
 Specifies the number of words to include in the passphrase. Default is 3.
+Alias: Words
 
 .PARAMETER Separator
 Specifies the character used to separate words in the passphrase. Valid values: "-", "_", "None", ".", ",", "+", "=". Default is "-".
@@ -35,6 +36,9 @@ Specifies the file path to save the generated passphrases. If specified, passphr
 
 .PARAMETER CopyToClipboard
 Copies the generated passphrases to the clipboard.
+
+.PARAMETER NoProgress
+Suppresses the progress bar display during passphrase generation.
 
 .EXAMPLE
 New-Passphrase
@@ -66,6 +70,7 @@ function New-Passphrase {
     [CmdletBinding(DefaultParameterSetName = "Simple")]
     param (
         [Parameter(Mandatory = $false)]
+        [Alias("Words")]
         [int]$WordCount = 3,
         [Parameter(Mandatory = $false)]
         [ValidateSet("-", "_", "None", ".", ",", "+", "=")]
@@ -83,7 +88,9 @@ function New-Passphrase {
         [ValidateNotNullOrEmpty()]
         [string]$OutputPath,
         [Parameter(Mandatory = $false)]
-        [Switch]$CopyToClipboard
+        [Switch]$CopyToClipboard,
+        [Parameter(mandatory = $false)]
+        [switch]$NoProgress
     )
 
     begin {
@@ -102,9 +109,11 @@ function New-Passphrase {
 
         while ($GeneratedPassphrases -lt $NumberOfPassphrases) {
 
-            $ProgressPercentage = [math]::Round(($GeneratedPassphrases / $NumberOfPassphrases) * 100)
-            Write-Progress -Activity "Generating Passphrases" -Status "$ProgressPercentage% Complete:" -PercentComplete $ProgressPercentage
-
+            if (-not $NoProgress) {
+                $ProgressPercentage = [math]::Round(($GeneratedPassphrases / $NumberOfPassphrases) * 100)
+                Write-Progress -Activity "Generating Passphrases" -Status "$ProgressPercentage% Complete:" -PercentComplete $ProgressPercentage
+            }
+            
             $Words = @()
             for ($i = 0; $i -lt $WordCount; $i++) {
                 $RandomWord = Get-Random -InputObject $WordList

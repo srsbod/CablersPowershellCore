@@ -38,6 +38,9 @@ Copies the generated passwords to the clipboard.
 .PARAMETER SleepTime
 Specifies the delay (in milliseconds) between password generations to avoid rate limiting. Default is 100.
 
+.PARAMETER NoProgress
+Suppresses the progress bar display during password generation.
+
 .EXAMPLE
 New-Password -Simple -NumberOfPasswords 5
 
@@ -81,7 +84,9 @@ function New-Password {
         [Parameter(Mandatory = $false)]
         [Switch]$CopyToClipboard,
         [Parameter(Mandatory = $false)]
-        [int]$SleepTime = 0 # In case it needs to be adjusted or increased to avoid rate limiting
+        [int]$SleepTime = 0, # In case it needs to be adjusted or increased to avoid rate limiting
+        [Parameter(Mandatory = $false)]
+        [switch]$NoProgress
     )
 
     begin {
@@ -93,8 +98,10 @@ function New-Password {
 
         while ($GeneratedPasswords -lt $NumberOfPasswords) {
 
-            $ProgressPercentage = [math]::Round(($GeneratedPasswords / $NumberOfPasswords) * 100)
-            Write-Progress -Activity "Generating Passwords" -Status "$ProgressPercentage% Complete:" -PercentComplete $ProgressPercentage
+            if (-not $NoProgress) {
+                $ProgressPercentage = [math]::Round(($GeneratedPasswords / $NumberOfPasswords) * 100)
+                Write-Progress -Activity "Generating Passwords" -Status "$ProgressPercentage% Complete:" -PercentComplete $ProgressPercentage
+            }
 
             if ($Simple) {
                 $Password = Invoke-RestMethod -Uri "https://www.dinopass.com/password/simple"

@@ -364,6 +364,7 @@ Note: Allow Clobber is required in Powershell Core due to the inclusion of a few
 | OutputPath        | String | No                 | Named    | Path to save passwords to a file                           |               |
 | CopyToClipboard   | Switch | No                 | Named    | Copies the password to clipboard                           | False         |
 | SleepTime         | Int    | No                 | Named    | Delay between API calls in milliseconds                    | 100           |
+| NoProgress        | Switch | No                 | Named    | Suppresses the progress bar display                        | False         |
 
 **Outputs**: String or String[] (Generated password(s)).
 
@@ -377,7 +378,7 @@ Note: Allow Clobber is required in Powershell Core due to the inclusion of a few
 
 | Name                 | Type   | Mandatory | Position | Description                                                 | Default Value |
 | -------------------- | ------ | --------- | -------- | ----------------------------------------------------------- | ------------- |
-| WordCount            | Int    | No        | Named    | Number of words to include in the passphrase                | 3             |
+| WordCount            | Int    | No        | Named    | Number of words to include in the passphrase (Alias: Words) | 3             |
 | Separator            | String | No        | Named    | Character to separate words ("-", "_", "None", ".", ",", "+", "=") | "-"           |
 | Case                 | String | No        | Named    | Case formatting ("Lowercase", "Uppercase", "Titlecase", "RandomCase") | "Titlecase"   |
 | ExcludeNumbers       | Switch | No        | Named    | Excludes numbers from the passphrase                        | False         |
@@ -385,6 +386,7 @@ Note: Allow Clobber is required in Powershell Core due to the inclusion of a few
 | NumberOfPassphrases  | Int    | No        | Named    | Number of passphrases to generate                           | 1             |
 | OutputPath           | String | No        | Named    | Path to save passphrases to a file                          |               |
 | CopyToClipboard      | Switch | No        | Named    | Copies the passphrase to clipboard                          | False         |
+| NoProgress           | Switch | No        | Named    | Suppresses the progress bar display                         | False         |
 
 **Outputs**: String or String[] (Generated passphrase(s)).
 
