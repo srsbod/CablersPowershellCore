@@ -122,7 +122,7 @@ function New-Passphrase {
                     "Uppercase" { $RandomWord = $RandomWord.ToUpper() }
                     "Titlecase" { $RandomWord = ($RandomWord.Substring(0, 1).ToUpper() + $RandomWord.Substring(1).ToLower()) }
                     "RandomCase" {
-                        if (Get-Random -Minimum 0 -Maximum 2 -AsBoolean) {
+                        if ((Get-Random -Minimum 0 -Maximum 2) -eq 1) {
                             $RandomWord = $RandomWord.ToUpper()
                         } else {
                             $RandomWord = $RandomWord.ToLower()
