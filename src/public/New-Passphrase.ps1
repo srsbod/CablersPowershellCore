@@ -1,7 +1,7 @@
 #Requires -Module PwnedPassCheck
 
-#TODO: Support for passphrases?
-#TODO: Test rate limiting better, possibly reduce/remove it to speed up the process
+#TODO: Additional case option: "RandomLetter" - each letter randomly upper/lower case
+#TODO: Additional format options (word##word, wordword##!)
 
 <#
 .SYNOPSIS
@@ -30,9 +30,10 @@ Checks if the generated passphrase has been pwned using the PwnedPassCheck modul
 
 .PARAMETER NumberOfPassphrases
 Specifies the number of passphrases to generate. Default is 1.
+Alias: Count
 
 .PARAMETER OutputPath
-Specifies the file path to save the generated passphrases. If specified, passphrases are appended to the file.
+Specifies the file path to save the generated passphrases. If specified, passphrases are appended to the file, or a new file is created if it doesn't exist.
 
 .PARAMETER CopyToClipboard
 Copies the generated passphrases to the clipboard.
@@ -77,12 +78,13 @@ function New-Passphrase {
         [string]$Separator = "-",
         [Parameter(Mandatory = $false)]
         [ValidateSet("Lowercase", "Uppercase", "Titlecase", "RandomCase")]
-        [string]$Case = "Titlecase",
+        [string]$Case = "RandomCase",
         [Parameter(Mandatory = $false)]
         [switch]$ExcludeNumbers,
         [Parameter(Mandatory = $false)]
         [Switch]$PwnCheck,
         [Parameter(Mandatory = $false)]
+        [Alias("Count")]
         [int]$NumberOfPassphrases = 1,
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]

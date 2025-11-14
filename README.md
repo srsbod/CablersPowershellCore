@@ -383,7 +383,7 @@ Note: Allow Clobber is required in Powershell Core due to the inclusion of a few
 | Case                 | String | No        | Named    | Case formatting ("Lowercase", "Uppercase", "Titlecase", "RandomCase") | "Titlecase"   |
 | ExcludeNumbers       | Switch | No        | Named    | Excludes numbers from the passphrase                        | False         |
 | PwnCheck             | Switch | No        | Named    | Checks if the passphrase has been exposed in data breaches  | False         |
-| NumberOfPassphrases  | Int    | No        | Named    | Number of passphrases to generate                           | 1             |
+| NumberOfPassphrases  | Int    | No        | Named    | Number of passphrases to generate (Alias: Count)            | 1             |
 | OutputPath           | String | No        | Named    | Path to save passphrases to a file                          |               |
 | CopyToClipboard      | Switch | No        | Named    | Copies the passphrase to clipboard                          | False         |
 | NoProgress           | Switch | No        | Named    | Suppresses the progress bar display                         | False         |
