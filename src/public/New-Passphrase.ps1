@@ -2,6 +2,7 @@
 
 #TODO: Additional case option: "RandomLetter" - each letter randomly upper/lower case
 #TODO: Additional format options (word##word, wordword##!)
+#TODO: Add maximum and minimum word lengths to filter the word list
 
 <#
 .SYNOPSIS
