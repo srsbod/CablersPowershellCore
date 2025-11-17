@@ -229,15 +229,36 @@ Note: Allow Clobber is required in Powershell Core due to the inclusion of a few
 
 ### Test-EmptyFolder
 
-**Description**: Checks if a folder is empty.
+**Description**: Checks if a folder is empty. If no path is specified, checks the current directory. Accepts pipeline input.
+
+**Aliases**: `isempty`
 
 **Parameters**:
 
-| Name | Type   | Mandatory | Position | Description        | Default Value |
-| ---- | ------ | --------- | -------- | ------------------ | ------------- |
-| Path | String | Yes       | 0        | Path to the folder |               |
+| Name | Type   | Mandatory | Pipeline Input | Position | Description        | Default Value      |
+| ---- | ------ | --------- | -------------- | -------- | ------------------ | ------------------ |
+| Path | String | No        | Yes            | 0        | Path to the folder | Current directory  |
 
 **Outputs**: Boolean (`$true` if the folder is empty, `$false` otherwise).
+
+**Examples**:
+
+```powershell
+# Test current directory
+Test-EmptyFolder
+
+# Test specific folder
+Test-EmptyFolder -Path "C:\Temp"
+
+# Pipeline input (single or multiple)
+"C:\Temp", "C:\Logs" | Test-EmptyFolder
+
+# Works with Get-ChildItem
+Get-ChildItem -Directory | Test-EmptyFolder
+
+# Using alias
+isempty -Path "C:\Temp"
+```
 
 ---
 

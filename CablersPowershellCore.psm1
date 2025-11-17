@@ -15,5 +15,6 @@ Set-Alias -name iplocation -Value Get-IPAddressLocation
 Set-Alias -name uptime -Value Get-Uptime
 Set-Alias -name lastboot -Value Get-LastBootTime
 Set-Alias -name publicip -Value Get-PublicIP
+Set-Alias -name isempty -Value Test-EmptyFolder
 
 
