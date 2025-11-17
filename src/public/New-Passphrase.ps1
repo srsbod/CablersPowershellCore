@@ -1,6 +1,5 @@
 #Requires -Module PwnedPassCheck
 
-#TODO: Additional case option: "RandomLetter" - each letter randomly upper/lower case
 #TODO: Additional format options (word##word, wordword##!)
 #TODO: Add maximum and minimum word lengths to filter the word list
 
@@ -21,7 +20,12 @@ Alias: Words
 Specifies the character used to separate words in the passphrase. Valid values: "-", "_", "None", ".", ",", "+", "=". Default is "-".
 
 .PARAMETER Case
-Specifies the case formatting for words in the passphrase. Valid values: "Lowercase", "Uppercase", "Titlecase", "RandomCase". Default is "Titlecase".
+Specifies the case formatting for words in the passphrase. Valid values: "Lowercase", "Uppercase", "Titlecase", "RandomCase", "RandomLetter". Default is "Titlecase".
+- Lowercase: All words in lowercase
+- Uppercase: All words in UPPERCASE
+- Titlecase: First letter uppercase, rest lowercase
+- RandomCase: Each word is randomly uppercase or lowercase
+- RandomLetter: Each letter in each word is randomly upper or lowercase
 
 .PARAMETER ExcludeNumbers
 Excludes numbers from the end of the passphrase. By default, a random number (0-99) is appended.
@@ -58,9 +62,9 @@ New-Passphrase -NumberOfPassphrases 5 -PwnCheck -OutputPath "C:\Passphrases.txt"
 Generates 5 passphrases, checks if they've been pwned, and saves them to the specified file.
 
 .EXAMPLE
-New-Passphrase -Case RandomCase -Separator "None" -CopyToClipboard
+New-Passphrase -Case RandomLetter -Separator "None" -CopyToClipboard
 
-Generates a passphrase with random case words without separators and copies it to the clipboard.
+Generates a passphrase where each letter has random capitalization without separators and copies it to the clipboard.
 
 .NOTES
 Requires the PwnedPassCheck module for the PwnCheck functionality.
@@ -78,7 +82,7 @@ function New-Passphrase {
         [ValidateSet("-", "_", "None", ".", ",", "+", "=")]
         [string]$Separator = "-",
         [Parameter(Mandatory = $false)]
-        [ValidateSet("Lowercase", "Uppercase", "Titlecase", "RandomCase")]
+        [ValidateSet("Lowercase", "Uppercase", "Titlecase", "RandomCase", "RandomLetter")]
         [string]$Case = "RandomCase",
         [Parameter(Mandatory = $false)]
         [switch]$ExcludeNumbers,
@@ -131,15 +135,27 @@ function New-Passphrase {
                             $RandomWord = $RandomWord.ToLower()
                         }
                     }
+                    "RandomLetter" {
+                        $RandomLetters = @()
+                        foreach ($char in $RandomWord.ToCharArray()) {
+                            if ((Get-Random -Minimum 0 -Maximum 2) -eq 1) {
+                                $RandomLetters += $char.ToString().ToUpper()
+                            } else {
+                                $RandomLetters += $char.ToString().ToLower()
+                            }
+                        }
+                        $RandomWord = $RandomLetters -join ""
+                    }
                 }
                 $Words += $RandomWord
             }
             
+            $ActualSeparator = $Separator
             if ($Separator -eq "None") {
-                $Separator = ""
+                $ActualSeparator = ""
             }
             
-            $Passphrase = $Words -join $Separator
+            $Passphrase = $Words -join $ActualSeparator
             
             if (-not $ExcludeNumbers) {
                 $RandomNumber = Get-Random -Minimum 0 -Maximum 99
