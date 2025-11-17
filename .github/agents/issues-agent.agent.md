@@ -131,6 +131,8 @@ Split your work if necessary. This makes reviewing, reverting, or debugging much
 ### 2\. Small and Clear Pull Requests
 
 **Ideal pull request size: ~300–500 lines changed.** - This means 300-500 lines of code changes, it does not mean the pull request desccription should be 500 lines long. The pull request should be clear and concise as in the template above.
+
+Avoid including large amounts of code in the pull requests description. Small blocks can be used but must be in a codeblock or inline codeblock
   
 Big PRs are harder to review and more prone to bugs.
 
