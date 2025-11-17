@@ -59,6 +59,8 @@ CablersPowershellCore is a PowerShell module designed to provide a collection of
 
 This module sets `RequireLicenseAcceptance = $true` in the manifest. Installation via PowerShellGet prompts users to review and accept the license (see [License](#license)).
 
+---
+
 ## Installation
 
 ### Install from PowerShell Gallery (Recommended)
@@ -68,7 +70,7 @@ The module is published to the [PowerShell Gallery](https://www.powershellgaller
 - All Users (requires admin, allows use by System)
 
   ```powershell
-  Install-Module -Name CablersPowershellCore -Scope AllUsers -AllowClobber
+  Install-Module -Name CablersPowershellCore -Scope AllUsers -AllowClobber # Requires admin
   ```
 
 - Current User
@@ -83,19 +85,8 @@ After installation, import the module:
 Import-Module -Name CablersPowershellCore
 ```
 
-Note: Allow Clobber is required in Powershell Core due to the inclusion of a few commands that exist in Core but not Windows Powershell. This is currently only `Get-Uptime` which behaves exactly the same as the one built into Powershell Core.
-
-### Manual Installation
-
-1. Download the module files and place them in a directory named `CablersPowershellCore` under one of the following paths:
-   - For all users: `C:\Program Files\WindowsPowerShell\Modules`
-   - For the current user: `C:\Users\<YourUsername>\Documents\WindowsPowerShell\Modules`
-
-2. Import the module into your session:
-
-   ```powershell
-   Import-Module -Name CablersPowershellCore
-   ```
+>[!Note]
+> `AllowClobber` is required due to the inclusion of a few commands that already exist. This is currently only `Get-Uptime` which behaves exactly the same as the one built into PowerShell Core, and `Get-DiskSpace` which has an additional output format.
 
 ---
 
