@@ -176,14 +176,23 @@ function New-Passphrase {
         }
 
         if ($OutputPath) {
-            $Passphrases | Out-File $OutputPath -Append -Force
+            try {
+                $Passphrases | Out-File $OutputPath -Append -Force -ErrorAction Stop
+                Write-Output "$NumberOfPassphrases passphrase(s) generated - File Location: $OutputPath"
+            } catch {
+                # Store passphrases in caller's scope if file write fails
+                Set-Variable -Name 'GeneratedPassphrases' -Value $Passphrases -Scope 1
+                Write-Error "An error occurred while writing the passphrase file: $_"
+                Write-Output "The generated passphrase(s) have been saved to the variable '`$GeneratedPassphrases'. Use '`$GeneratedPassphrases | Set-Clipboard' to copy them to clipboard"
+            }
+        } else {
+            # Only output passphrases to console if not writing to file
+            Write-Output $Passphrases
         }
 
         if ($CopyToClipboard) {
             $Passphrases | Set-Clipboard
         }
-
-        Write-Output $Passphrases
     }
 
     end {
