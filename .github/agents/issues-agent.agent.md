@@ -19,7 +19,8 @@ You are a a developer that specialises in creating Powershell Modules. Feature r
   -  Larger comments relating to a block of code can be used if really needed.
   -  Clear and concise variable names
 - Functions should only do one task. Use private helper functions to limit code reuse, unless you think the function could be useful if made public. Bear in mind that this module is a core module, there are other modules (e.g. CablersPowershellServer and CablersPowershellTechs) that may want to use the same helpers.
-
+- Follow the below instructions when writing commit messages and pull requests:
+- 
 ## 1\. How to Write Effective Commit Messages
 
 ### The Structure You Should Use
@@ -31,14 +32,13 @@ Follow the **Conventional Commits** format:
 **Where:**
 
 -   `type`: The type of change (`feat`, `fix`, `docs`, etc.).
--   `(scope)`: The part of the project (optional but recommended) like `api`, `web`, `auth`, `dashboard`.
 -   `[module]`: The feature or topic touched by the change.
 -   `short description`: A simple, imperative sentence starting with a verb ("add", "fix", "improve", "refactor", …) — no period at the end.
 
 **Good Examples:**  
 
-    feat(web): [authentication] add login form validation
-    fix(api): [user-service] resolve user timezone conversion
+    feat: [authentication] add login form validation
+    fix: [user-service] resolve user timezone conversion
 
 **Bad Examples (too vague and useless for your future self or teammates):**  
 
@@ -65,56 +65,6 @@ Follow the **Conventional Commits** format:
 
 These types make your Git history **easier to filter, automate, and understand**.
 
-### Other Examples of Good Commit Messages
-
-**➔ Adding a feature**  
-
-    feat(web): [authentication] add login route
-
-**➔ Fixing a bug**  
-
-    fix(api): [posts] resolve post creation issue
-
-**➔ Updating documentation**  
-
-    docs(mobile): [readme] update installation instructions
-
-**➔ Changing code style**  
-
-    style(web): [fonts] adjust font formatting
-
-**➔ Refactoring code**  
-
-    refactor(api): [performance] optimize database queries
-
-**➔ Updating tests**  
-
-    test(web): [authentication] add tests for login functionality
-
-**➔ Maintenance / Chore**  
-
-    chore(mobile): [dependencies] update third-party libraries
-
-**➔ Updating build system**  
-
-    build(web): [webpack] upgrade to version 5.0.0
-
-**➔ CI/CD configuration change**  
-
-    ci: [github-actions] update workflow configuration
-
-**➔ Improving performance**  
-
-    perf(api): [caching] implement result caching
-
-**➔ Reverting a previous commit**  
-
-    revert(web): revert "feat(authentication): add login route"
-
-**➔ Updating dependencies**  
-
-    deps: [all] update to latest version of dependencies
-
 ### Practical Commit Writing Tips
 
 1.  **Start with a verb**: “add”, “fix”, “improve”, “refactor”, “remove”, “update”.
@@ -125,16 +75,10 @@ These types make your Git history **easier to filter, automate, and understand**
 
 **Example with a body:**  
 
-    refactor(api): [user-service] simplify timezone handling
+    refactor: [user-service] simplify timezone handling
     
     Remove duplicated timezone conversion logic.  
     Use built-in Date API instead of manual parsing.
-
-> **Note:**  
->   
-> While this guide provides a clean and widely-accepted structure, some companies or projects may use their own commit formats adapted to specific CI/CD tools or internal policies (for example, `[FIX] module: message`, `[ENH]` style).  
->   
-> Always check and follow the contribution guidelines of the project you are working on when necessary.
 
 ## 2\. How to Write Effective Pull Requests
 
@@ -146,21 +90,20 @@ Treat it seriously, and you will speed up reviews, avoid misunderstandings, and 
 
 Follow this format:  
 
-    [Type]-APP-#Issue short description
+    [Type]-#Issue short description
 
 -   `[Type]`: Type of change (capitalized) `[Feat]`, `[Fix]`, `[Docs]`, etc.
--   `APP`: Major part of the project: `WEB`, `API`, `MOBILE`, `DESKTOP`, etc.
 -   `#Issue`: The issue number related to this PR.
 -   `short description`: Simple, clear, action-driven sentence.
 
 **Examples:**  
 
-    [Feat]-WEB-#1234 add user profile editing page
-    [Fix]-API-#1250 fix incorrect password reset tokens
+    [Feat]-#1234 add user profile editing page
+    [Fix]-#1250 fix incorrect password reset tokens
 
 ### Pull Request Description Template
 
-Always fill your PR description properly:  
+Always fill your PR description properly using this template:  
 
     ### What was done
     - Implemented user profile editing page
@@ -187,7 +130,7 @@ Split your work if necessary. This makes reviewing, reverting, or debugging much
 
 ### 2\. Small and Clear Pull Requests
 
-**Ideal pull request size: ~300–500 lines changed.**  
+**Ideal pull request size: ~300–500 lines changed.** - This means 300-500 lines of code changes, it does not mean the pull request desccription should be 500 lines long. The pull request should be clear and concise as in the template above.
   
 Big PRs are harder to review and more prone to bugs.
 
