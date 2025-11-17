@@ -355,7 +355,7 @@ isempty -Path "C:\Temp"
 
 ### Remove-EmptyFolders
 
-**Description**: Removes empty folders from a specified directory.
+**Description**: Recursively removes empty folders from a specified directory.
 
 **Parameters**:
 
