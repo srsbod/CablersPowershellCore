@@ -150,11 +150,12 @@ function New-Passphrase {
                 $Words += $RandomWord
             }
             
+            $ActualSeparator = $Separator
             if ($Separator -eq "None") {
-                $Separator = ""
+                $ActualSeparator = ""
             }
             
-            $Passphrase = $Words -join $Separator
+            $Passphrase = $Words -join $ActualSeparator
             
             if (-not $ExcludeNumbers) {
                 $RandomNumber = Get-Random -Minimum 0 -Maximum 99
