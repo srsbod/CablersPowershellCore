@@ -96,5 +96,49 @@ Describe 'New-Passphrase' {
             ($result | Sort-Object | Get-Unique).Count | Should -Be $count -Because 'Generated passphrases should be unique'
         }
     }
+
+    Context 'When outputting passphrases to a file' {
+        BeforeEach {
+            $testFile = Join-Path $TestDrive "passphrases.txt"
+        }
+
+        It 'Should write passphrases to file and return success message instead of passphrases' {
+            $count = 3
+            $result = New-Passphrase -NumberOfPassphrases $count -OutputPath $testFile -NoProgress
+            
+            # Result should be the success message, not the passphrases
+            $result | Should -Match "$count passphrase\(s\) generated - File Location: $testFile"
+            $result | Should -Not -BeNullOrEmpty
+            
+            # File should exist and contain the passphrases
+            Test-Path $testFile | Should -Be $true
+            $fileContent = Get-Content $testFile
+            $fileContent.Count | Should -Be $count
+        }
+
+        It 'Should set GeneratedPassphrases variable in caller scope when file write fails' {
+            $invalidPath = "/root/restricted/passphrases.txt"
+            $count = 2
+            
+            # Capture both output and error streams
+            $result = New-Passphrase -NumberOfPassphrases $count -OutputPath $invalidPath -NoProgress 2>&1 | Out-String
+            
+            # Should contain error message
+            $result | Should -Match "An error occurred while writing the passphrase file"
+            
+            # Should contain instructions about the variable
+            $result | Should -Match "GeneratedPassphrases"
+            $result | Should -Match "Set-Clipboard"
+        }
+
+        It 'Should return passphrases when no OutputPath is specified' {
+            $count = 2
+            $result = New-Passphrase -NumberOfPassphrases $count -NoProgress
+            
+            # Should return passphrase strings, not a message
+            $result.Count | Should -Be $count
+            $result[0] | Should -Not -Match "passphrase\(s\) generated - File Location"
+        }
+    }
 }
 

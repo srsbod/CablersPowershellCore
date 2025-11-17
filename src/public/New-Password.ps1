@@ -132,14 +132,23 @@ function New-Password {
         }
 
         if ($OutputPath) {
-            $Passwords | Out-File $OutputPath -Append -Force
+            try {
+                $Passwords | Out-File $OutputPath -Append -Force -ErrorAction Stop
+                Write-Output "$NumberOfPasswords password(s) generated - File Location: $OutputPath"
+            } catch {
+                # Store passwords in caller's scope if file write fails
+                Set-Variable -Name 'GeneratedPasswords' -Value $Passwords -Scope 1
+                Write-Error "An error occurred while writing the password file: $_"
+                Write-Output "The generated password(s) have been saved to the variable '`$GeneratedPasswords'. Use '`$GeneratedPasswords | Set-Clipboard' to copy them to clipboard"
+            }
+        } else {
+            # Only output passwords to console if not writing to file
+            Write-Output $Passwords
         }
 
         if ($CopyToClipboard) {
             $Passwords | Set-Clipboard
         }
-
-        Write-Output $Passwords
     }
 
     end {
