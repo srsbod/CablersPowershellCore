@@ -9,28 +9,28 @@
 @{
 
     # Script module or binary module file associated with this manifest.
-    RootModule            = 'CablersPowershellCore.psm1'
+    RootModule        = 'CablersPowershellCore.psm1'
 
     # Version number of this module.
-    ModuleVersion         = '2.1.3'
+    ModuleVersion     = '2.1.3'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
 
     # ID used to uniquely identify this module
-    GUID                  = 'ee79955b-0eeb-48d4-a1b4-fa692d955cac'
+    GUID              = 'ee79955b-0eeb-48d4-a1b4-fa692d955cac'
 
     # Author of this module
-    Author                = 'Brad Bullock'
+    Author            = 'Brad Bullock'
 
     # Company or vendor of this module
-    CompanyName           = 'Cablers Ltd'
+    CompanyName       = 'Cablers Ltd'
 
     # Copyright statement for this module
-    Copyright             = '(c) Brad Bullock. All rights reserved.'
+    Copyright         = '(c) Brad Bullock. All rights reserved.'
 
     # Description of the functionality provided by this module
-    Description           = 'Cablers Powershell base module for all devices'
+    Description       = 'Cablers Powershell base module for all devices'
 
     # Minimum version of the PowerShell engine required by this module
     # PowerShellVersion = ''
@@ -39,7 +39,7 @@
     # PowerShellHostName = ''
 
     # Minimum version of the PowerShell host required by this module
-    PowerShellHostVersion = '5.1'
+    # PowerShellHostVersion = '5.1'
 
     # Minimum version of Microsoft .NET Framework required by this module. This prerequisite is valid for the PowerShell Desktop edition only.
     # DotNetFrameworkVersion = ''
@@ -51,7 +51,7 @@
     # ProcessorArchitecture = ''
 
     # Modules that must be imported into the global environment prior to importing this module
-    RequiredModules       = @('PwnedPassCheck')
+    RequiredModules   = @('PwnedPassCheck')
 
     # Assemblies that must be loaded prior to importing this module
     # RequiredAssemblies = @()
@@ -70,7 +70,7 @@
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
     # Functions to export from this module
-    FunctionsToExport     = @(
+    FunctionsToExport = @(
         'Compare-Files',
         'Compress-7z',
         'Convert-PrefixToSubnetMask',
@@ -103,7 +103,7 @@
     # VariablesToExport = '*'
 
     # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-    AliasesToExport       = '*'
+    AliasesToExport   = '*'
 
     # DSC resources to export from this module
     # DscResourcesToExport = @()
@@ -115,7 +115,7 @@
     # FileList = @()
 
     # Private data to pass to the module specified in RootModule/ModuleToProcess. This may also contain a PSData hashtable with additional module metadata used by PowerShell.
-    PrivateData           = @{
+    PrivateData       = @{
 
         PSData = @{
 
