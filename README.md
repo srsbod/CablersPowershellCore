@@ -508,16 +508,6 @@ Get-LongestCommonPrefix -Strings @("flower", "flow", "flight")
 
 ---
 
-## Release Checklist
-
-- [ ] Run the integration tests locally or via `Invoke-Pester`.
-- [ ] Update `CablersPowershellCore.psd1` with the new `ModuleVersion` and release notes.
-- [ ] Confirm `README.md` reflects any new parameters or dependencies.
-- [ ] Verify `.github/workflows/BuildAndRelease.yaml` secrets (`PS_GALLERY_API_KEY`) are present before tagging.
-- [ ] Create a signed or unsigned package as required and push tags to trigger automation.
-
----
-
 ## License
 
 This project is licensed under the [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](https://creativecommons.org/licenses/by-nc-sa/4.0/). Any installation from the PowerShell Gallery or manual distribution requires explicit acceptance of the license terms.
