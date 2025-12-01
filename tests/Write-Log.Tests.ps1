@@ -1,6 +1,6 @@
 Describe 'Write-Log' {
     BeforeAll {
-        $TempLogDir = Join-Path -Path '/tmp' -ChildPath 'WriteLogTests'
+        $TempLogDir = Join-Path -Path ([System.IO.Path]::GetTempPath()) -ChildPath 'WriteLogTests'
         if (-not (Test-Path -Path $TempLogDir)) {
             New-Item -Path $TempLogDir -ItemType Directory | Out-Null
         }
