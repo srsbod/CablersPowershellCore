@@ -122,12 +122,21 @@ Describe 'Write-Log' {
     }
 
     Context 'Console and file logging options' {
-        It 'Should not write to file when NoFile is specified' {
-            Write-Log -Message 'Console only' -LogPath $TestLogPath -NoFile
-            Test-Path -Path $TestLogPath | Should -Be $false
+        It 'Should not write to file when LogPath is not specified' {
+            # This test verifies default behavior (console only)
+            # Since we cannot easily capture console output, we verify no file is created
+            $defaultLogPath = Join-Path -Path ([System.IO.Path]::GetTempPath()) -ChildPath 'CablersPowershellCore.log'
+            Remove-Item -Path $defaultLogPath -Force -ErrorAction SilentlyContinue
+            Write-Log -Message 'Console only by default'
+            Test-Path -Path $defaultLogPath | Should -Be $false
         }
 
-        It 'Should write to file when NoConsole is specified' {
+        It 'Should write to file when LogPath is specified' {
+            Write-Log -Message 'File and console' -LogPath $TestLogPath
+            Test-Path -Path $TestLogPath | Should -Be $true
+        }
+
+        It 'Should write to file only when LogPath is specified with NoConsole' {
             Write-Log -Message 'File only' -LogPath $TestLogPath -NoConsole
             Test-Path -Path $TestLogPath | Should -Be $true
         }

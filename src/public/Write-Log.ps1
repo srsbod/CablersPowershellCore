@@ -1,12 +1,13 @@
 <#
 .SYNOPSIS
-    Writes log messages with timestamps to console and/or file.
+    Writes log messages with timestamps to console and optionally to a file.
 
 .DESCRIPTION
     A logging function that can be used globally across all scripts. It supports
-    different log levels (DEBUG, INFO, WARNING, ERROR) and allows logging to both
-    console and a log file. The function supports configurable options for log
-    file location and log rotation.
+    different log levels (DEBUG, INFO, WARNING, ERROR) and allows logging to console
+    and optionally to a log file. By default, messages are written to console only.
+    To enable file logging, specify the LogPath parameter. The function supports
+    configurable options for log file location and log rotation.
 
 .PARAMETER Message
     The message to log. This parameter is mandatory.
@@ -16,22 +17,20 @@
     Default is INFO.
 
 .PARAMETER LogPath
-    The path to the log file. Default is the system temp directory with filename 'CablersPowershellCore.log'.
+    The path to the log file. If specified, messages will be written to both console
+    and the log file. If not specified, messages are written to console only.
     If the directory does not exist, it will be created automatically.
 
 .PARAMETER NoConsole
-    Switch to disable console logging. Default is to log to console.
-
-.PARAMETER NoFile
-    Switch to disable file logging. Default is to log to file.
+    Switch to disable console logging. Useful when you only want to log to a file.
 
 .PARAMETER MaxFileSizeMB
     Maximum log file size in megabytes before rotation. Default is 10MB.
-    When the file exceeds this size, it will be rotated.
+    When the file exceeds this size, it will be rotated. Only applies when LogPath is specified.
 
 .PARAMETER MaxLogFiles
     Maximum number of rotated log files to keep. Default is 5.
-    Older files beyond this count will be deleted.
+    Older files beyond this count will be deleted. Only applies when LogPath is specified.
 
 .PARAMETER MinLogLevel
     The minimum log level to output. Messages with a level below this will not be logged.
@@ -40,35 +39,30 @@
 .EXAMPLE
     Write-Log -Message "Application started"
 
-    Logs an INFO level message to both console and the default log file.
+    Logs an INFO level message to the console only.
 
 .EXAMPLE
     Write-Log -Message "An error occurred" -Level ERROR
 
-    Logs an ERROR level message to both console and the default log file.
+    Logs an ERROR level message to the console only.
 
 .EXAMPLE
     Write-Log -Message "Debug information" -Level DEBUG -MinLogLevel DEBUG
 
-    Logs a DEBUG level message when DEBUG level logging is enabled.
+    Logs a DEBUG level message to the console when DEBUG level logging is enabled.
 
 .EXAMPLE
-    Write-Log -Message "File only message" -NoConsole
+    Write-Log -Message "Log to file" -LogPath "C:\Logs\myapp.log"
+
+    Logs a message to both console and the specified log file. The directory will be created if it doesn't exist.
+
+.EXAMPLE
+    Write-Log -Message "File only message" -LogPath "C:\Logs\myapp.log" -NoConsole
 
     Logs a message only to the log file, not to the console.
 
 .EXAMPLE
-    Write-Log -Message "Console only message" -NoFile
-
-    Logs a message only to the console, not to a file.
-
-.EXAMPLE
-    Write-Log -Message "Custom path" -LogPath "C:\Logs\myapp.log"
-
-    Logs a message to a custom log file location. The directory will be created if it doesn't exist.
-
-.EXAMPLE
-    Write-Log -Message "With rotation" -MaxFileSizeMB 5 -MaxLogFiles 3
+    Write-Log -Message "With rotation" -LogPath "C:\Logs\myapp.log" -MaxFileSizeMB 5 -MaxLogFiles 3
 
     Logs with custom rotation settings: rotate when file exceeds 5MB, keep only 3 archived logs.
 
@@ -93,13 +87,10 @@ function Write-Log {
 
         [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
-        [string]$LogPath = (Join-Path -Path ([System.IO.Path]::GetTempPath()) -ChildPath 'CablersPowershellCore.log'),
+        [string]$LogPath,
 
         [Parameter(Mandatory = $false)]
         [switch]$NoConsole,
-
-        [Parameter(Mandatory = $false)]
-        [switch]$NoFile,
 
         [Parameter(Mandatory = $false)]
         [ValidateRange(1, 1000)]
@@ -154,8 +145,8 @@ function Write-Log {
             }
         }
 
-        # File logging
-        if (-not $NoFile) {
+        # File logging (only if LogPath is specified)
+        if (-not [string]::IsNullOrEmpty($LogPath)) {
             # Ensure log directory exists
             $LogDirectory = Split-Path -Path $LogPath -Parent
             if (-not [string]::IsNullOrEmpty($LogDirectory) -and -not (Test-Path -Path $LogDirectory)) {
