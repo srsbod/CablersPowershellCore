@@ -93,7 +93,8 @@
         'Test-EmptyFolder',
         'Test-IsAdmin',
         'Uninstall-Software',
-        'New-Passphrase'
+        'New-Passphrase',
+        'Write-Log'
     )
 
     # Cmdlets to export from this module
