@@ -100,28 +100,14 @@ function Write-Log {
 
         [Parameter(Mandatory = $false)]
         [ValidateRange(1, 100)]
-        [int]$MaxLogFiles = 5,
-
-        [Parameter(Mandatory = $false)]
-        [ValidateSet('DEBUG', 'INFO', 'WARNING', 'ERROR')]
-        [string]$MinLogLevel = 'INFO'
+        [int]$MaxLogFiles = 5
     )
 
     begin {
-        # Define log level hierarchy for comparison
-        $LogLevelPriority = @{
-            'DEBUG'   = 0
-            'INFO'    = 1
-            'WARNING' = 2
-            'ERROR'   = 3
-        }
+
     }
 
     process {
-        # Check if message level meets minimum threshold
-        if ($LogLevelPriority[$Level] -lt $LogLevelPriority[$MinLogLevel]) {
-            return
-        }
 
         # Format timestamp as YYYY-MM-DD HH:MM:SS
         $Timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
@@ -137,7 +123,7 @@ function Write-Log {
         if (-not $NoConsole) {
             switch ($Level) {
                 'DEBUG' {
-                    Write-Host $FormattedMessage -ForegroundColor Gray
+                    Write-Host $FormattedMessage -ForegroundColor Cyan
                 }
                 'INFO' {
                     Write-Host $FormattedMessage -ForegroundColor White
