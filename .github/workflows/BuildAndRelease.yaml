@@ -50,14 +50,17 @@ jobs:
           $VersionChanged = [System.Version]$CurrentVersion -gt [System.Version]$LatestVersion
           Write-Output -InputObject "Version changed: $VersionChanged"
 
-          If (-not $VersionChanged) {
-            Write-Output -InputObject "No version change detected. Skipping release."
-            exit 0
-          } else {
-            "VERSION_CHANGED=$VersionChanged" >> $env:GITHUB_OUTPUT
+          # Set VERSION_CHANGED output for all cases
+          "VERSION_CHANGED=$VersionChanged" >> $env:GITHUB_OUTPUT
+          
+          if (-not $VersionChanged) {
+            Write-Output -InputObject "::notice::No version change detected. Release steps will be skipped."
+            Write-Output -InputObject "## ⏭️ Release Skipped" >> $env:GITHUB_STEP_SUMMARY
+            Write-Output -InputObject "Module version $CurrentVersion has not increased from the latest release ($LatestVersion)." >> $env:GITHUB_STEP_SUMMARY
           }
 
       - name: Get commit history
+        if: steps.check-version.outputs.VERSION_CHANGED == 'true'
         id: get-history
         shell: pwsh
         run: |
@@ -86,6 +89,7 @@ jobs:
           "EOF" >> $env:GITHUB_OUTPUT
 
       - name: Create build package
+        if: steps.check-version.outputs.VERSION_CHANGED == 'true'
         id: create-package
         shell: pwsh
         run: |
@@ -157,6 +161,7 @@ jobs:
           "ZIP_PATH=$ZipPath" >> $env:GITHUB_OUTPUT
 
       - name: Install required modules
+        if: steps.check-version.outputs.VERSION_CHANGED == 'true'
         shell: pwsh
         run: |
           # Ensure manifest-defined dependencies are present before publishing
@@ -247,6 +252,7 @@ jobs:
           }
 
       - name: Publish to PowerShell Gallery
+        if: steps.check-version.outputs.VERSION_CHANGED == 'true'
         shell: pwsh
         env:
           PS_GALLERY_API_KEY: ${{ secrets.PS_GALLERY_API_KEY }}
@@ -277,7 +283,7 @@ jobs:
           }
 
       - name: Create Release
-        if: github.event_name != 'pull_request' || github.event.pull_request.merged == true
+        if: steps.check-version.outputs.VERSION_CHANGED == 'true' && (github.event_name != 'pull_request' || github.event.pull_request.merged == true)
         uses: softprops/action-gh-release@v1
         with:
           name: Release v${{ steps.get-version.outputs.VERSION }}
