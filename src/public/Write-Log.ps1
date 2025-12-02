@@ -37,6 +37,13 @@
     The minimum log level to output. Messages with a level below this will not be logged.
     Valid values are DEBUG, INFO, WARNING, and ERROR. Default is INFO.
 
+.PARAMETER ForegroundColor
+    Custom console color to use for the log message, overriding the default color scheme.
+    Valid values are: Black, DarkBlue, DarkGreen, DarkCyan, DarkRed, DarkMagenta, DarkYellow,
+    Gray, DarkGray, Blue, Green, Cyan, Red, Magenta, Yellow, White.
+    This parameter has an alias 'Color' for convenience.
+    Default colors by level: DEBUG=Cyan, INFO=White, WARNING=Yellow, ERROR=Red.
+
 .EXAMPLE
     Write-Log -Message "Application started"
 
@@ -66,6 +73,21 @@
     Write-Log -Message "With rotation" -LogPath "C:\Logs\myapp.log" -MaxFileSizeMB 5 -MaxLogFiles 3
 
     Logs with custom rotation settings: rotate when file exceeds 5MB, keep only 3 archived logs.
+
+.EXAMPLE
+    Write-Log -Message "Success!" -ForegroundColor Green
+
+    Logs an INFO level message in green color instead of the default white.
+
+.EXAMPLE
+    Write-Log -Message "Custom debug" -Level DEBUG -Color Magenta
+
+    Logs a DEBUG level message in magenta using the Color alias, overriding the default cyan.
+
+.EXAMPLE
+    Write-Log -Message "Important error" -Level ERROR -ForegroundColor DarkRed
+
+    Logs an ERROR level message in dark red instead of the default bright red.
 
 .OUTPUTS
     None. This function writes to console and/or file but does not output to the pipeline.
@@ -100,7 +122,14 @@ function Write-Log {
 
         [Parameter(Mandatory = $false)]
         [ValidateRange(1, 100)]
-        [int]$MaxLogFiles = 5
+        [int]$MaxLogFiles = 5,
+
+        [Parameter(Mandatory = $false)]
+        [Alias('Color')]
+        [ValidateSet('Black', 'DarkBlue', 'DarkGreen', 'DarkCyan', 'DarkRed', 'DarkMagenta', 
+                     'DarkYellow', 'Gray', 'DarkGray', 'Blue', 'Green', 'Cyan', 
+                     'Red', 'Magenta', 'Yellow', 'White')]
+        [string]$ForegroundColor
     )
 
     begin {
@@ -121,20 +150,18 @@ function Write-Log {
 
         # Console logging
         if (-not $NoConsole) {
-            switch ($Level) {
-                'DEBUG' {
-                    Write-Host $FormattedMessage -ForegroundColor Cyan
-                }
-                'INFO' {
-                    Write-Host $FormattedMessage -ForegroundColor White
-                }
-                'WARNING' {
-                    Write-Host $FormattedMessage -ForegroundColor Yellow
-                }
-                'ERROR' {
-                    Write-Host $FormattedMessage -ForegroundColor Red
+            # Determine color to use: custom color if specified, otherwise default based on level
+            if ($ForegroundColor) {
+                $ConsoleColor = $ForegroundColor
+            } else {
+                $ConsoleColor = switch ($Level) {
+                    'DEBUG'   { 'Cyan' }
+                    'INFO'    { 'White' }
+                    'WARNING' { 'Yellow' }
+                    'ERROR'   { 'Red' }
                 }
             }
+            Write-Host $FormattedMessage -ForegroundColor $ConsoleColor
         }
 
         # File logging (only if LogPath is specified)

@@ -36,6 +36,7 @@ CablersPowershellCore is a PowerShell module designed to provide a collection of
     - [Test-EmptyFolder](#test-emptyfolder)
     - [Test-IsAdmin](#test-isadmin)
     - [Uninstall-Software](#uninstall-software)
+    - [Write-Log](#write-log)
 
 ---
 
@@ -264,6 +265,61 @@ isempty -Path "C:\Temp"
 | SoftwareName | String | Yes       | 0        | Name of the software to uninstall |               |
 
 **Outputs**: None.
+
+---
+
+### Write-Log
+
+**Description**: Writes log messages with timestamps to console and optionally to a file. Supports different log levels (DEBUG, INFO, WARNING, ERROR), custom colors, and log file rotation.
+
+**Parameters**:
+
+| Name            | Type   | Mandatory | Position | Description                                                                                                                                                                       | Default Value |
+| --------------- | ------ | --------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- |
+| Message         | String | No        | 0        | The message to log (can be empty or blank)                                                                                                                                        | ''            |
+| Level           | String | No        | Named    | Log level: DEBUG, INFO, WARNING, ERROR                                                                                                                                            | INFO          |
+| LogPath         | String | No        | Named    | Path to log file (creates directory if needed)                                                                                                                                    |               |
+| NoConsole       | Switch | No        | Named    | Disables console output (file only)                                                                                                                                               | False         |
+| MaxFileSizeMB   | Int    | No        | Named    | Maximum log file size before rotation (1-1000 MB)                                                                                                                                 | 10            |
+| MaxLogFiles     | Int    | No        | Named    | Maximum number of rotated log files to keep (1-100)                                                                                                                               | 5             |
+| ForegroundColor | String | No        | Named    | Custom console color (Black, DarkBlue, DarkGreen, DarkCyan, DarkRed, DarkMagenta, DarkYellow, Gray, DarkGray, Blue, Green, Cyan, Red, Magenta, Yellow, White). Alias: **Color** |               |
+
+**Outputs**: None. Writes to console and/or file.
+
+**Default Colors by Level**:
+
+- DEBUG → Cyan
+- INFO → White  
+- WARNING → Yellow
+- ERROR → Red
+
+**Examples**:
+
+```powershell
+# Basic logging to console
+Write-Log -Message "Application started"
+
+# Log with custom color
+Write-Log -Message "Success!" -ForegroundColor Green
+
+# Using the Color alias
+Write-Log -Message "Custom debug" -Level DEBUG -Color Magenta
+
+# Log to file with rotation settings
+Write-Log -Message "Important event" -LogPath "C:\Logs\app.log" -MaxFileSizeMB 5 -MaxLogFiles 3
+
+# File only (no console output)
+Write-Log -Message "Silent log" -LogPath "C:\Logs\app.log" -NoConsole
+
+# Override ERROR default color
+Write-Log -Message "Critical error" -Level ERROR -Color DarkRed
+```
+
+**Notes**:
+
+- Log file format: `YYYY-MM-DD HH:MM:SS [LEVEL] Message`
+- Rotated files are named with `.1`, `.2`, etc. suffixes (e.g., `app.log.1`, `app.log.2`)
+- Custom colors override default level colors
 
 ---
 
