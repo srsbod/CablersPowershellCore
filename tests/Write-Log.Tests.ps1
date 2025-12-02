@@ -216,16 +216,38 @@ Describe 'Write-Log' {
             { Write-Log -Message 'Test' -MinLogLevel 'INVALID' -LogPath $TestLogPath -NoConsole } | Should -Throw
         }
 
-        It 'Should reject empty Message' {
-            { Write-Log -Message '' -LogPath $TestLogPath -NoConsole } | Should -Throw
-        }
-
         It 'Should reject MaxFileSizeMB less than 1' {
             { Write-Log -Message 'Test' -MaxFileSizeMB 0 -LogPath $TestLogPath -NoConsole } | Should -Throw
         }
 
         It 'Should reject MaxLogFiles less than 1' {
             { Write-Log -Message 'Test' -MaxLogFiles 0 -LogPath $TestLogPath -NoConsole } | Should -Throw
+        }
+    }
+
+    Context 'Empty and blank message handling' {
+        It 'Should accept empty string message' {
+            { Write-Log -Message '' -LogPath $TestLogPath -NoConsole } | Should -Not -Throw
+            Test-Path -Path $TestLogPath | Should -Be $true
+        }
+
+        It 'Should log timestamp and level for empty message' {
+            Write-Log -Message '' -LogPath $TestLogPath -NoConsole
+            $content = Get-Content -Path $TestLogPath -Raw
+            $content | Should -Match '^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \[INFO\]'
+        }
+
+        It 'Should accept null message from pipeline' {
+            { $null | Write-Log -LogPath $TestLogPath -NoConsole } | Should -Not -Throw
+        }
+
+        It 'Should handle mixed content with blank lines from pipeline' {
+            @('Line 1', '', 'Line 3') | Write-Log -LogPath $TestLogPath -NoConsole
+            $lines = Get-Content -Path $TestLogPath
+            $lines.Count | Should -Be 3
+            $lines[0] | Should -Match 'Line 1'
+            $lines[1] | Should -Match '\[INFO\]$'
+            $lines[2] | Should -Match 'Line 3'
         }
     }
 }

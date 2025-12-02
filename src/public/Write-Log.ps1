@@ -10,7 +10,8 @@
     configurable options for log file location and log rotation.
 
 .PARAMETER Message
-    The message to log. This parameter is mandatory.
+    The message to log. This parameter is mandatory but can be empty or blank.
+    Empty messages will result in a log entry with just the timestamp and level.
 
 .PARAMETER Level
     The log level for the message. Valid values are DEBUG, INFO, WARNING, and ERROR.
@@ -77,9 +78,10 @@
 function Write-Log {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [ValidateNotNullOrEmpty()]
-        [string]$Message,
+        [Parameter(Mandatory = $false, Position = 0, ValueFromPipeline = $true)]
+        [AllowEmptyString()]
+        [AllowNull()]
+        [string]$Message = '',
 
         [Parameter(Mandatory = $false)]
         [ValidateSet('DEBUG', 'INFO', 'WARNING', 'ERROR')]
@@ -124,8 +126,12 @@ function Write-Log {
         # Format timestamp as YYYY-MM-DD HH:MM:SS
         $Timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
 
-        # Format the log message
-        $FormattedMessage = "$Timestamp [$Level] $Message"
+        # Format the log message - trim trailing space if message is empty
+        if ([string]::IsNullOrEmpty($Message)) {
+            $FormattedMessage = "$Timestamp [$Level]"
+        } else {
+            $FormattedMessage = "$Timestamp [$Level] $Message"
+        }
 
         # Console logging
         if (-not $NoConsole) {
