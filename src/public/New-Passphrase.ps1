@@ -103,7 +103,8 @@ function New-Passphrase {
     begin {
         $Passphrases = @()
         $GeneratedPassphrases = 0
-        $WordListURL = "https://raw.githubusercontent.com/srsbod/PassPhraseWordList/refs/heads/main/en.txt"
+        #TODO Add multiple word list options for different max word length
+        $WordListURL = "https://raw.githubusercontent.com/srsbod/PassPhraseWordList/refs/heads/main/basic-max7.txt"
         try {
             $WordList = (Invoke-RestMethod -Uri $WordListURL) -split "`n" | Where-Object { $_.Trim() -ne "" }
         } catch {
